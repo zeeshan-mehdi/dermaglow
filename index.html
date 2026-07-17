@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dermaglow — AI Skin Coach</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F8F4F0; color: #1A1A2E; }
+    nav { background: #fff; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E8E0D8; position: sticky; top: 0; z-index: 10; }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; color: #7B5EA7; text-decoration: none; }
+    .logo-icon { width: 36px; height: 36px; background: #7B5EA7; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .logo-icon svg { width: 20px; height: 20px; fill: white; }
+    nav a { color: #6B7280; text-decoration: none; font-size: 14px; }
+    nav a:hover { color: #7B5EA7; }
+    .hero { text-align: center; padding: 100px 24px 80px; }
+    .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; line-height: 1.1; background: linear-gradient(135deg, #7B5EA7, #A78BCA); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+    .hero p { font-size: 20px; color: #6B7280; max-width: 540px; margin: 0 auto 40px; line-height: 1.6; }
+    .badge { display: inline-block; background: #7B5EA7; color: white; text-decoration: none; padding: 16px 36px; border-radius: 14px; font-size: 17px; font-weight: 600; transition: opacity .2s; }
+    .badge:hover { opacity: .88; }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; padding: 0 24px 100px; }
+    .card { background: white; border-radius: 18px; padding: 28px; border: 1px solid #E8E0D8; }
+    .card-icon { width: 48px; height: 48px; background: #F0EBF8; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 24px; }
+    .card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .card p { font-size: 14px; color: #6B7280; line-height: 1.6; }
+    .disclaimer { background: #FFF8E7; border: 1px solid #F0D070; border-radius: 12px; padding: 16px 24px; max-width: 700px; margin: 0 auto 60px; text-align: center; font-size: 13px; color: #7A6020; line-height: 1.6; }
+    footer { background: white; border-top: 1px solid #E8E0D8; padding: 32px 24px; text-align: center; }
+    footer a { color: #7B5EA7; text-decoration: none; margin: 0 12px; font-size: 14px; }
+    footer p { color: #9CA3AF; font-size: 13px; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div>
+      Dermaglow
+    </a>
+    <div>
+      <a href="/dermaglow/privacy">Privacy</a>
+      <a href="/dermaglow/support" style="margin-left:24px">Support</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>Your AI Skin Coach</h1>
+    <p>Scan your skin, build personalised routines, and track your glow — powered by dermatology-grade AI.</p>
+    <a href="https://apps.apple.com/app/id6790204292" class="badge">Download on the App Store</a>
+  </section>
+
+  <section class="features">
+    <div class="card">
+      <div class="card-icon">🔬</div>
+      <h3>AI Skin Analysis</h3>
+      <p>Take a photo and get a detailed breakdown of your skin concerns, causes, and recommended treatments in seconds.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💬</div>
+      <h3>AI Skin Coach</h3>
+      <p>Chat with your personal AI dermatology coach anytime. Ask anything about ingredients, routines, or your skin.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌿</div>
+      <h3>Smart Routines</h3>
+      <p>Build morning and evening routines tailored to your exact skin type, concerns, and lifestyle.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧪</div>
+      <h3>Ingredient Checker</h3>
+      <p>Scan any skincare product to instantly see if it suits your skin and flags conflicts with your current routine.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📈</div>
+      <h3>Progress Tracking</h3>
+      <p>Watch your skin improve over time with visual comparisons and AI-tracked progress across your key concerns.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔒</div>
+      <h3>Privacy First</h3>
+      <p>Your photos are encrypted and never shared with third parties or used for advertising. You stay in control.</p>
+    </div>
+  </section>
+
+  <div class="disclaimer">
+    Dermaglow is not a medical device and does not provide medical diagnoses. AI-generated results are informational only.
+    Always consult a licensed dermatologist for any skin health concerns, especially unusual spots or moles.
+  </div>
+
+  <footer>
+    <div>
+      <a href="/dermaglow/privacy">Privacy Policy</a>
+      <a href="/dermaglow/support">Support</a>
+      <a href="mailto:support@dermaglow.app">Contact</a>
+    </div>
+    <p>&copy; 2026 Dermaglow. All rights reserved.</p>
+  </footer>
+</body>
+</html>
