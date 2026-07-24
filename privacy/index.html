@@ -39,7 +39,7 @@
 
   <div class="container">
     <h1>Privacy Policy</h1>
-    <p class="updated">Last updated: 17 July 2026</p>
+    <p class="updated">Last updated: 24 July 2026</p>
 
     <div class="highlight">
       <p>Your privacy matters. Dermaglow never sells your personal data, never uses your photos for advertising, and never shares your data with third parties except as required to provide the service.</p>
@@ -64,8 +64,8 @@
       </tr>
       <tr>
         <td><strong>Facial photos</strong></td>
-        <td>Photos you take or upload for skin analysis</td>
-        <td>To perform AI skin analysis</td>
+        <td>Photos of your face/skin you capture with your camera or select from your photo library, for scans and for images you choose to attach in AI chat</td>
+        <td>To perform AI skin analysis and answer your questions about attached photos</td>
       </tr>
       <tr>
         <td><strong>Skin profile</strong></td>
@@ -142,44 +142,62 @@
     </ul>
 
     <h2>6. Who We Share Data With</h2>
-    <p>We share data only with the following sub-processors, all of whom are bound by data processing agreements:</p>
+    <p>We share data only with the following sub-processors, all of whom are bound by data processing agreements. None of them may use your facial photos to train their own models:</p>
     <table>
       <tr>
         <th>Provider</th>
         <th>Purpose</th>
+        <th>Facial photos?</th>
         <th>Location</th>
       </tr>
       <tr>
         <td>Supabase</td>
-        <td>Database, authentication, file storage</td>
+        <td>Database, authentication, and encrypted file storage for your photos and account data</td>
+        <td>Yes — stores the photo files</td>
         <td>EU (AWS Frankfurt) / US</td>
       </tr>
       <tr>
+        <td>OpenRouter</td>
+        <td>AI routing gateway — receives your photo from Supabase via a short-lived (60 second–5 minute) link and forwards it to the vision model below to generate your scan/chat result</td>
+        <td>Yes — routes the photo, does not retain it</td>
+        <td>US (SCCs apply)</td>
+      </tr>
+      <tr>
+        <td>Google (Gemini models)</td>
+        <td>Performs the visual skin analysis on your photos (spots, texture, tone, concerns) via OpenRouter</td>
+        <td>Yes — analyses the photo</td>
+        <td>US (SCCs apply)</td>
+      </tr>
+      <tr>
         <td>OpenAI</td>
-        <td>AI skin analysis and chat responses</td>
+        <td>Powers the text-based AI chat coach (routines, product advice, follow-up questions). Only receives photos if you directly attach one in chat for discussion</td>
+        <td>Only if you attach a photo in chat</td>
         <td>US (SCCs apply)</td>
       </tr>
       <tr>
         <td>Apple (RevenueCat)</td>
         <td>Subscription and payment processing</td>
+        <td>No</td>
         <td>US (SCCs apply)</td>
       </tr>
       <tr>
         <td>Firebase (Google)</td>
         <td>Push notifications only</td>
+        <td>No</td>
         <td>US (SCCs apply)</td>
       </tr>
     </table>
-    <p>We do <strong>not</strong> sell your data to any third party. We do not use your data for advertising purposes.</p>
+    <p>We do <strong>not</strong> sell your data to any third party. We do not use your data for advertising purposes. No sub-processor uses your facial photos to train its models.</p>
 
     <h2>7. International Data Transfers</h2>
     <p>Some of our sub-processors are based in the United States. Where data is transferred outside the UK or EU, we ensure adequate protection through <strong>Standard Contractual Clauses (SCCs)</strong> approved by the European Commission, or equivalent safeguards.</p>
 
     <h2>8. Data Retention</h2>
     <ul>
-      <li><strong>Facial photos:</strong> Retained for as long as your account is active. Deleted within 30 days of account deletion.</li>
-      <li><strong>Scan results:</strong> Retained for as long as your account is active. Deleted within 30 days of account deletion.</li>
-      <li><strong>Account data:</strong> Deleted within 30 days of account deletion request.</li>
+      <li><strong>Facial photos:</strong> Kept in your private, access-controlled storage folder for as long as your account is active, so you can view your scan history and track progress over time. Permanently deleted from storage when you delete your account (Settings → Delete Account), or sooner on request to <a href="mailto:privacy@dermaglow.app">privacy@dermaglow.app</a>.</li>
+      <li><strong>Scan results (AI-generated text analysis):</strong> Retained for as long as your account is active. Deleted when you delete your account.</li>
+      <li><strong>OpenRouter / Google Gemini / OpenAI (AI processing):</strong> These providers receive your photo via a short-lived link or API call solely to generate your result. Per their API terms, they do not use this content to train their models. They may retain it briefly (typically up to 30 days) for abuse and safety monitoring under their own standard API data-retention policies, separate from and in addition to Dermaglow's retention above.</li>
+      <li><strong>Account data:</strong> Deleted within 30 days of your account deletion request.</li>
       <li><strong>Anonymised usage data:</strong> May be retained indefinitely as it cannot be linked to you.</li>
     </ul>
 
@@ -228,6 +246,7 @@
     <div>
       <a href="/dermaglow">Home</a>
       <a href="/dermaglow/privacy">Privacy Policy</a>
+      <a href="/dermaglow/terms">Terms of Use</a>
       <a href="/dermaglow/support">Support</a>
     </div>
     <p>&copy; 2026 Dermaglow. All rights reserved.</p>
