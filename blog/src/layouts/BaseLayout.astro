@@ -23,6 +23,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" />
+
     <link rel="icon" type="image/png" href="/icon-256.png" />
     <link rel="apple-touch-icon" href="/icon-256.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />

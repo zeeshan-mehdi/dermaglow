@@ -1,43 +1,65 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Disclaimer from '../components/Disclaimer.astro';
 
 const posts = (await getCollection('blog', ({ data }) => import.meta.env.PROD ? !data.draft : true))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const [featured, ...rest] = posts;
 
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 ---
 <BaseLayout
-  title="Dermaglow Blog — Skincare, Explained"
-  description="Evidence-led guides on ingredients, routines and skin concerns from the team behind Dermaglow, the AI skin coach."
+  title="Dermaglow — Field Notes"
+  description="What we find when we test our own product. Research notes, measurements and method from the team building Dermaglow."
 >
-  <div class="page-head">
-    <h1>Skincare, Explained</h1>
-    <p>Evidence-led guides on ingredients, routines and the science behind your skin.</p>
-  </div>
+  <section class="hero-dark">
+    <div class="wrap-wide">
+      <p class="eyebrow">Dermaglow · Field Notes</p>
+      <h1>We test our own product, and publish what we find.</h1>
+      <p>Measurements, method and the numbers that didn't flatter us — from the team building the AI skin coach.</p>
+    </div>
+  </section>
 
   <div class="wrap">
-    {posts.length === 0 ? (
+    {!featured ? (
       <p class="empty">No articles published yet — check back soon.</p>
     ) : (
-      <div class="post-list">
-        {posts.map((post) => (
-          <a class="post-card" href={`/posts/${post.id}/`}>
-            <div class="card-emoji" aria-hidden="true">{post.data.heroEmoji}</div>
-            <h2>{post.data.title}</h2>
-            <p>{post.data.description}</p>
-            <div class="post-meta">
-              <time datetime={post.data.pubDate.toISOString()}>{fmt(post.data.pubDate)}</time>
-              {post.data.tags.slice(0, 3).map((t) => <span class="tag">{t}</span>)}
-              {post.data.draft && <span class="tag">Draft</span>}
-            </div>
-          </a>
-        ))}
-      </div>
-    )}
+      <>
+        <a class="featured" href={`/posts/${featured.id}/`}>
+          <p class="featured-kicker">Latest</p>
+          <h2>{featured.data.title}</h2>
+          <p class="featured-lede">{featured.data.description}</p>
+          <div class="post-meta">
+            <time datetime={featured.data.pubDate.toISOString()}>{fmt(featured.data.pubDate)}</time>
+            <span>·</span>
+            <span>{featured.data.author}</span>
+            {featured.data.tags.slice(0, 2).map((t) => <span class="tag">{t}</span>)}
+          </div>
+          <span class="featured-cue">Read the study &rarr;</span>
+        </a>
 
-    <Disclaimer />
+        {rest.length > 0 && (
+          <div class="post-list">
+            {rest.map((post) => (
+              <a class="post-card" href={`/posts/${post.id}/`}>
+                <h2>{post.data.title}</h2>
+                <p>{post.data.description}</p>
+                <div class="post-meta">
+                  <time datetime={post.data.pubDate.toISOString()}>{fmt(post.data.pubDate)}</time>
+                  {post.data.tags.slice(0, 3).map((t) => <span class="tag">{t}</span>)}
+                  {post.data.draft && <span class="tag">Draft</span>}
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+
+        {rest.length === 0 && (
+          <p class="more-soon">More notes as the work lands. Every study we run gets published here — including the ones that don't go our way.</p>
+        )}
+      </>
+    )}
   </div>
 </BaseLayout>

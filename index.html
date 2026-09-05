@@ -3,100 +3,165 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dermaglow — AI Skin Coach</title>
-  <link rel="icon" type="image/png" href="icon-256.png">
-  <link rel="apple-touch-icon" href="icon-256.png">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F5FAF8; color: #1A1A2E; }
-    nav { background: #fff; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #DCEAE1; position: sticky; top: 0; z-index: 10; }
-    .logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; color: #164A36; text-decoration: none; }
-    .logo-icon { width: 36px; height: 36px; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-    .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
-    nav a { color: #6B7280; text-decoration: none; font-size: 14px; }
-    nav a:hover { color: #2C8060; }
-    .hero { text-align: center; padding: 100px 24px 80px; }
-    .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; line-height: 1.1; background: linear-gradient(135deg, #164A36, #4FA8A8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-    .hero p { font-size: 20px; color: #6B7280; max-width: 540px; margin: 0 auto 40px; line-height: 1.6; }
-    .badge { display: inline-block; background: #2C8060; color: white; text-decoration: none; padding: 16px 36px; border-radius: 14px; font-size: 17px; font-weight: 600; transition: opacity .2s; }
-    .badge:hover { opacity: .88; }
-    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; padding: 0 24px 100px; }
-    .card { background: white; border-radius: 18px; padding: 28px; border: 1px solid #DCEAE1; }
-    .card-icon { width: 48px; height: 48px; background: #E7F3EC; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 24px; }
-    .card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-    .card p { font-size: 14px; color: #6B7280; line-height: 1.6; }
-    .disclaimer { background: #FFF8E7; border: 1px solid #F0D070; border-radius: 12px; padding: 16px 24px; max-width: 700px; margin: 0 auto 60px; text-align: center; font-size: 13px; color: #7A6020; line-height: 1.6; }
-    footer { background: white; border-top: 1px solid #DCEAE1; padding: 32px 24px; text-align: center; }
-    footer a { color: #2C8060; text-decoration: none; margin: 0 12px; font-size: 14px; }
-    footer p { color: #9CA3AF; font-size: 13px; margin-top: 12px; }
-  </style>
+  <title>Dermaglow — Your AI Skin Coach</title>
+  <meta name="description" content="Scan your skin, get a clear Skin Score, and build a routine that adapts to you. Dermaglow is the AI skin coach that publishes its own measurements." />
+  <link rel="icon" type="image/png" href="/icon-256.png">
+  <link rel="apple-touch-icon" href="/icon-256.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <meta property="og:title" content="Dermaglow — Your AI Skin Coach">
+  <meta property="og:description" content="Scan your skin, get a clear Skin Score, and build a routine that adapts to you.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://dermaglowbeauty.com/">
+  <meta property="og:image" content="https://dermaglowbeauty.com/icon-256.png">
 </head>
 <body>
   <nav>
-    <a href="/" class="logo">
-      <div class="logo-icon"><img src="icon-128.png" alt="Dermaglow"></div>
-      Dermaglow
-    </a>
-    <div>
-      <a href="https://blog.dermaglowbeauty.com">Blog</a>
-      <a href="privacy" style="margin-left:24px">Privacy</a>
-      <a href="support" style="margin-left:24px">Support</a>
+    <div class="wrap">
+      <a href="/" class="logo">
+        <span class="logo-icon"><img src="/icon-128.png" alt=""></span>
+        Dermaglow
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="https://blog.dermaglowbeauty.com" class="nav-mobile">Blog</a>
+        <a href="/support">Support</a>
+        <a href="https://apps.apple.com/app/id6790204292" class="nav-cta">Get the app</a>
+      </div>
     </div>
   </nav>
 
-  <section class="hero">
-    <h1>Your AI Skin Coach</h1>
-    <p>Scan your skin, build personalised routines, and track your glow — powered by dermatology-grade AI.</p>
-    <a href="https://apps.apple.com/app/id6790204292" class="badge">Download on the App Store</a>
-  </section>
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="eyebrow">AI Skin Coach</p>
+          <h1>Know your skin.<br>Track your <em>glow</em>.</h1>
+          <p class="hero-sub">Photo analysis, a clear Skin Score, and a routine that adapts to you — built on measurements we publish in full.</p>
+          <div class="hero-actions">
+            <a href="https://apps.apple.com/app/id6790204292" class="badge">Download on the App Store</a>
+            <a href="https://blog.dermaglowbeauty.com/posts/the-number-we-couldnt-show-you/" class="badge-ghost">Read our research</a>
+          </div>
+        </div>
+        <div class="hero-shot">
+          <div class="phone"><img src="/screens/hero.webp" width="760" height="1587" alt="The Dermaglow home screen showing a Skin Score of 74 and today's insight." fetchpriority="high"></div>
+        </div>
+      </div>
+    </section>
 
-  <section class="features">
-    <div class="card">
-      <div class="card-icon">🔬</div>
-      <h3>AI Skin Analysis</h3>
-      <p>Take a photo and get a detailed breakdown of your skin concerns, causes, and recommended treatments in seconds.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">💬</div>
-      <h3>AI Skin Coach</h3>
-      <p>Chat with your personal AI dermatology coach anytime. Ask anything about ingredients, routines, or your skin.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">🌿</div>
-      <h3>Smart Routines</h3>
-      <p>Build morning and evening routines tailored to your exact skin type, concerns, and lifestyle.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">🧪</div>
-      <h3>Ingredient Checker</h3>
-      <p>Scan any skincare product to instantly see if it suits your skin and flags conflicts with your current routine.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">📈</div>
-      <h3>Progress Tracking</h3>
-      <p>Watch your skin improve over time with visual comparisons and AI-tracked progress across your key concerns.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">🔒</div>
-      <h3>Privacy First</h3>
-      <p>Your photos are encrypted and never shared with third parties or used for advertising. You stay in control.</p>
-    </div>
-  </section>
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>One photo. A real reading.</h2>
+          <p>Everything in Dermaglow starts with a scan — and ends with something you can act on tonight.</p>
+        </div>
 
-  <div class="disclaimer">
-    Dermaglow is not a medical device and does not provide medical diagnoses. AI-generated results are informational only.
-    Always consult a licensed dermatologist for any skin health concerns, especially unusual spots or moles.
-  </div>
+        <div class="feature">
+          <div>
+            <p class="feature-num">01 — SCAN</p>
+            <h3>Analysis across twelve facial zones</h3>
+            <p>Take a photo and Dermaglow reads hydration, texture, redness and inflammatory spots zone by zone, then explains what it found in plain language.</p>
+          </div>
+          <div class="feature-shot"><div class="phone"><img src="/screens/scan.webp" width="760" height="1587" alt="Dermaglow analysing a face across twelve zones." loading="lazy"></div></div>
+        </div>
+
+        <div class="feature">
+          <div>
+            <p class="feature-num">02 — TRACK</p>
+            <h3>A Skin Score that turns scans into a trend</h3>
+            <p>One number, tracked over weeks, with the concerns that moved underneath it. We only report change we can actually stand behind — the threshold is deliberate, and we explain exactly why.</p>
+          </div>
+          <div class="feature-shot"><div class="phone"><img src="/screens/score.webp" width="760" height="1587" alt="The progress screen showing a Skin Score trend over five weeks." loading="lazy"></div></div>
+        </div>
+
+        <div class="feature">
+          <div>
+            <p class="feature-num">03 — ASK</p>
+            <h3>A coach that knows your last scan</h3>
+            <p>Ask about an ingredient, a reaction, or what to do about the redness on your cheeks. Answers are grounded in your own history, not generic advice.</p>
+          </div>
+          <div class="feature-shot"><div class="phone"><img src="/screens/coach.webp" width="760" height="1587" alt="The AI coach answering a question about cheek redness." loading="lazy"></div></div>
+        </div>
+
+        <div class="feature">
+          <div>
+            <p class="feature-num">04 — ROUTINE</p>
+            <h3>Morning and evening, built around you</h3>
+            <p>A routine assembled from your skin type, concerns and what you already own — adjusting as your scans change.</p>
+          </div>
+          <div class="feature-shot"><div class="phone"><img src="/screens/routine.webp" width="760" height="1587" alt="A personalised evening skincare routine." loading="lazy"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="research">
+      <div class="wrap research-inner">
+        <p class="eyebrow">Field notes</p>
+        <h2>We tested our own Skin Score, and published what we found.</h2>
+        <p>Most skin apps show you a number and never check whether it means anything. We spent a week measuring ours — including the part where it reported change on skin three seconds old.</p>
+        <div class="stat-row">
+          <div class="stat"><b>49</b><span>photographs</span></div>
+          <div class="stat"><b>156</b><span>model calls</span></div>
+          <div class="stat"><b>21</b><span>sittings</span></div>
+        </div>
+        <a href="https://blog.dermaglowbeauty.com/posts/the-number-we-couldnt-show-you/" class="badge">Read the study</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Built with your privacy first</h2>
+          <p>Your face is the most personal data you have. We treat it that way.</p>
+        </div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-icon">🔒</div>
+            <h3>Encrypted and yours</h3>
+            <p>Photos live in your private, access-controlled storage. Never sold, never used for advertising.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🧪</div>
+            <h3>Ingredient checker</h3>
+            <p>Scan any product to see whether it suits your skin and whether it conflicts with your routine.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🗑️</div>
+            <h3>Delete anytime</h3>
+            <p>One tap in Settings removes your stored photos and account data permanently.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">📖</div>
+            <h3>Open about limits</h3>
+            <p>Where the instrument is uncertain, we say so — in the app and in our published research.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <p class="disclaimer">
+          Dermaglow is not a medical device and does not provide medical diagnoses. AI-generated results are informational only.
+          Always consult a licensed dermatologist for any skin health concerns, especially unusual spots or moles.
+        </p>
+      </div>
+    </section>
+  </main>
 
   <footer>
-    <div>
-      <a href="https://blog.dermaglowbeauty.com">Blog</a>
-      <a href="privacy">Privacy Policy</a>
-      <a href="terms">Terms of Use</a>
-      <a href="support">Support</a>
-      <a href="mailto:support@dermaglowbeauty.com">Contact</a>
+    <div class="wrap">
+      <div class="links">
+        <a href="https://blog.dermaglowbeauty.com">Blog</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Use</a>
+        <a href="/support">Support</a>
+        <a href="mailto:support@dermaglowbeauty.com">Contact</a>
+      </div>
+      <p>&copy; 2026 Dermaglow. All rights reserved.</p>
     </div>
-    <p>&copy; 2026 Dermaglow. All rights reserved.</p>
   </footer>
 </body>
 </html>
