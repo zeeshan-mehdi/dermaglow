@@ -1,0 +1,30 @@
+/* Scoped styles for long-form engineering studies (charts, section numbers,
+   pull quotes, method notes). Loaded only by posts that use them. */
+.prose { --band:#D9DED2; --signal:#0E7C61; --noise:#C63C1F; --ink-3:#77807C; --ink-2:#454E4B; }
+
+.prose figure { margin: 32px 0; }
+.prose figure svg { width: 100%; height: auto; display: block; }
+.prose figcaption { font-size: 14px; color: var(--muted); line-height: 1.6; margin-top: 12px; }
+
+.svg-title  { font-family: inherit; font-size: 13px; fill: var(--ink-2); font-weight: 600; }
+.svg-label  { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; fill: var(--ink-3); }
+.svg-strong { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; fill: var(--ink); font-weight: 500; }
+
+.section-num {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px; color: var(--brand); letter-spacing: .08em;
+  display: block; margin-top: 48px; margin-bottom: -8px;
+}
+.pull {
+  border-left: 3px solid var(--signal); padding: 4px 0 4px 22px;
+  font-size: 20px; line-height: 1.5; color: var(--brand-deep); margin: 32px 0;
+}
+.caveat {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 20px 24px; font-size: 15px; line-height: 1.65;
+}
+.caveat strong { color: var(--brand-deep); }
+.method {
+  font-size: 14px; color: var(--muted); line-height: 1.7;
+  border-top: 1px solid var(--line); padding-top: 24px; margin-top: 40px;
+}
