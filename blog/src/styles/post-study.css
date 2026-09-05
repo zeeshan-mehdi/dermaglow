@@ -28,3 +28,17 @@
   font-size: 14px; color: var(--muted); line-height: 1.7;
   border-top: 1px solid var(--line); padding-top: 24px; margin-top: 40px;
 }
+
+/* byline stat line under the article header */
+.prose .byline-stats {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px; color: var(--faint); letter-spacing: .01em;
+  padding-bottom: 6px;
+}
+/* wide comparison tables scroll inside themselves, never the page */
+.prose .table-wrap { overflow-x: auto; margin: 28px 0; -webkit-overflow-scrolling: touch; }
+.prose .table-wrap table { display: table; width: 100%; min-width: 460px; }
+.prose .table-wrap td, .prose .table-wrap th { vertical-align: top; }
+.prose .table-wrap td.n, .prose .table-wrap th.n { white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* inline model quotes inside the before/after table */
+.prose .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
