@@ -1,0 +1,9 @@
+# The blog SOURCE lives in /blog in this repo and is published by a SEPARATE
+# Cloudflare Pages project (root directory: blog) — it is not content for this
+# site. Cloudflare follows redirects even when a static asset matches, so these
+# rules keep the unbuilt source from ever being served on the apex domain.
+#
+# No /blog/<slug> URLs have ever existed here, so everything goes to the blog
+# root rather than guessing at a post path.
+/blog/*  https://blog.dermaglowbeauty.com/  301
+/blog    https://blog.dermaglowbeauty.com/  301
