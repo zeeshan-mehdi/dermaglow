@@ -13,11 +13,9 @@ heroEmoji: "📉"
 <svg viewBox="0 0 760 300" role="img"
            aria-label="Eight real skin changes, all correctly signed, all sitting inside the plus or minus six point noise band. A control with no real change moved further than any of them.">
         <text x="0" y="14" class="svg-title">How far the Skin Score moved on eight real skin changes</text>
-
         <!-- noise band -->
         <rect x="40" y="40" width="680" height="150" fill="var(--band)" rx="3"/>
         <text x="48" y="58" class="svg-label">the ±6 point band — anything in here, the app must call &ldquo;no change&rdquo;</text>
-
         <!-- zero line -->
         <line x1="380" y1="34" x2="380" y2="228" stroke="var(--ink-3)" stroke-width="1"/>
         <text x="380" y="246" class="svg-label" text-anchor="middle">0</text>
@@ -25,7 +23,6 @@ heroEmoji: "📉"
         <text x="720" y="246" class="svg-label" text-anchor="end">+6</text>
         <text x="150" y="266" class="svg-label">skin got worse</text>
         <text x="610" y="266" class="svg-label" text-anchor="end">skin got better</text>
-
         <!-- 8 real changes: x = 380 + delta*56.67 -->
         <g>
           <circle cx="153" cy="62"  r="6" fill="var(--signal)"/><text x="167" y="66" class="svg-strong">−4.0</text>
@@ -37,7 +34,6 @@ heroEmoji: "📉"
           <circle cx="607" cy="206" r="6" fill="var(--signal)"/><text x="593" y="210" class="svg-strong" text-anchor="end">+4.0</text>
           <circle cx="641" cy="230" r="6" fill="var(--signal)"/><text x="627" y="234" class="svg-strong" text-anchor="end">+4.6</text>
         </g>
-
         <!-- the control -->
         <circle cx="652" cy="22" r="6" fill="var(--noise)"/>
         <text x="638" y="26" class="svg-strong" text-anchor="end" fill="var(--noise)">+4.8 — skin that did not change at all</text>
