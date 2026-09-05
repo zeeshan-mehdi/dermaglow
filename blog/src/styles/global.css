@@ -61,9 +61,18 @@ nav {
 .logo-icon { width: 32px; height: 32px; border-radius: 9px; overflow: hidden; flex: none; }
 .logo-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .logo-sub { color: var(--mint); font-weight: 500; }
-.nav-links { display: flex; align-items: center; gap: 26px; }
-.nav-links a { color: var(--on-night-2); text-decoration: none; font-size: 14.5px; transition: color .18s; }
+.nav-links { display: flex; align-items: center; gap: 24px; }
+.nav-links a {
+  color: var(--on-night-2); text-decoration: none; font-size: 14.5px;
+  white-space: nowrap;              /* "Main site" must never wrap to two lines */
+  transition: color .18s;
+}
 .nav-links a:hover { color: var(--mint); }
+.nav-cta {
+  background: var(--mint); color: #08110D !important;
+  padding: 9px 17px; border-radius: 10px; font-weight: 650; font-size: 14px;
+}
+.nav-cta:hover { opacity: .9; }
 
 /* ---------- dark hero on the index ---------- */
 .hero-dark {
@@ -193,8 +202,12 @@ footer p { color: #64756C; font-size: 13px; margin-top: 14px; }
 @media (max-width: 640px) {
   nav { padding: 14px 18px; }
   .logo { font-size: 17px; }
-  .nav-links { gap: 16px; }
+  .nav-links { gap: 15px; }
   .nav-links a { font-size: 13.5px; }
+  /* Support lives in the footer too, so drop the secondary links on phones
+     rather than letting five items crush together in the bar. */
+  .nav-links a.nav-hide-sm { display: none; }
+  .logo { gap: 9px; }
   .hero-dark { padding: 68px 20px 76px; }
   .prose { font-size: 17px; }
   footer a { display: inline-block; margin: 5px 10px; }

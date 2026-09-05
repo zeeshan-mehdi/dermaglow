@@ -105,12 +105,11 @@ nav .wrap { display: flex; align-items: center; justify-content: space-between; 
 .badge-ghost:hover { border-color: var(--mint); color: var(--mint); }
 
 /* phone frames */
-.phone {
-  border-radius: 30px; overflow: hidden;
-  border: 1px solid var(--line-2);
-  box-shadow: 0 40px 90px -40px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.02) inset;
-  background: #000;
-}
+/* The PNG carries its own rounded alpha mask, so no frame here — a
+   border-radius would clip the corners twice and a box-shadow would trace a
+   rectangle around a rounded image. drop-shadow follows the alpha instead. */
+.phone { filter: drop-shadow(0 26px 46px rgba(0,0,0,.62)); }
+.phone img { width: 100%; height: auto; }
 .hero-shot { justify-self: center; max-width: 320px; width: 100%; }
 .hero-shot .phone { transform: rotate(1.2deg); }
 
@@ -222,10 +221,10 @@ footer p { color: var(--on-night-3); font-size: 13px; }
   .hero-grid { grid-template-columns: 1fr; text-align: center; }
   .hero-sub { margin-inline: auto; }
   .hero-actions { justify-content: center; }
-  .hero-shot { max-width: 268px; margin-top: 12px; }
+  .hero-shot { max-width: 240px; margin-top: 12px; }
   .feature { grid-template-columns: 1fr; text-align: center; gap: 28px; }
   .feature:nth-child(even) .feature-shot { order: 0; }
-  .feature-shot { order: 0; max-width: 250px; }
+  .feature-shot { order: 0; max-width: 228px; }
   .feature p { margin-inline: auto; }
 }
 @media (max-width: 560px) {
@@ -233,8 +232,8 @@ footer p { color: var(--on-night-3); font-size: 13px; }
   .nav-links a:not(.nav-cta) { display: none; }
   .nav-links a.nav-mobile { display: inline; font-size: 14px; }
   .hero h1 { font-size: clamp(33px, 9vw, 44px); }
-  .badge, .badge-ghost { width: 100%; text-align: center; }
   .hero-actions { flex-direction: column; align-items: stretch; width: 100%; }
+  .hero-actions .badge, .hero-actions .badge-ghost { width: 100%; text-align: center; }
   .phone { border-radius: 24px; }
   .card { padding: 22px; }
 }
