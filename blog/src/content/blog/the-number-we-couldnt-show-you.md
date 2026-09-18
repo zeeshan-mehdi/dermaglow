@@ -2,12 +2,19 @@
 title: "The Number We Couldn't Show You"
 description: "I spent a week testing whether our own Skin Score can actually see a spot appear. It can. It just can't say so — and then I broke out mid-write-up, and the app blamed my sunscreen."
 pubDate: 2026-09-05
+updatedDate: 2026-09-18
 author: "Zeeshan Mehdi"
 tags: ["Engineering", "Research"]
 heroEmoji: "📉"
 ---
 
 <p class="byline-stats">By Zeeshan Mehdi · 5 September 2026 · 15 min read · 55 photographs, 176 model calls, $5.60</p>
+
+<div class="caveat">
+
+**Update, 18 September.** Everything in "What changes because of this" has now shipped, and I broke out again in the meantime. The follow-up — [The Breakout Was Real. The Recovery Wasn't.](/posts/the-breakout-was-real/) — reports what the app did across a week of real scans, and corrects one row in the table under "Finding two" that was written before its test had been run.
+
+</div>
 
 <figure>
 <svg viewBox="0 0 760 300" role="img"
@@ -86,7 +93,7 @@ Then I went through every one and marked where the spots were, and which
 From that we built two kinds of test pair:
 
 - **Real changes.** Eight before-and-after pairs where
- something genuinely happened — a breakout appeared on his forehead, a
+ something genuinely happened — a breakout appeared on my forehead, a
  cluster of spots on his cheek cleared up. The model should see these.
 - **Non-changes.** Pairs taken *within a single
  sitting*, seconds to minutes apart. Skin cannot change in ninety
@@ -219,7 +226,7 @@ Then we looked at the direction of each movement.
       </svg>
 </figure>
 
-**Eight out of eight, correct.** Every time his skin got
+**Eight out of eight, correct.** Every time my skin got
  worse the score went down. Every time it cleared, the score went up. A
  number generating noise gets that right half the time; the odds of a
  clean sweep by luck are under one in a hundred.
