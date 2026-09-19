@@ -1,0 +1,17 @@
+{
+  // dermaglowbeauty.com — a Worker serving the static site from the repo
+  // root, plus one route (/get/<store>) in src/worker.js that counts
+  // store-button clicks before redirecting. The blog is a separate Worker
+  // rooted at blog/ and is excluded from these assets by .assetsignore.
+  "$schema": "https://unpkg.com/wrangler/config-schema.json",
+  "name": "dermaglow",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  },
+  "analytics_engine_datasets": [
+    { "binding": "STORE_CLICKS", "dataset": "store_clicks" }
+  ]
+}

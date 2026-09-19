@@ -2,12 +2,17 @@
 
 ## Store-click tracking
 
-Every "Get the app" link points at `/get/ios` (later `/get/android`) with a
-`?src=` naming the placement, instead of at the store. `functions/get/[store].js`
-counts the hit server-side in Workers Analytics Engine and 302s to the store —
-ad-blockers cannot see it. Requires one binding on the **apex** Pages project:
-Settings → Bindings → Analytics Engine → variable `STORE_CLICKS`, dataset
-`store_clicks`. Without it the redirect still works and nothing is counted.
+The apex is a **Worker with static assets** (`wrangler.jsonc`), deployed by
+Cloudflare's Git-connected Workers Build on every push to `main`. The deploy
+command there must be plain `npx wrangler deploy` — the config file carries the
+assets directory, the script and the bindings.
+
+Store buttons carry `data-store`/`data-src`; their hrefs can point at
+`/get/ios` (later `/get/android`) with `?src=` naming the placement instead of
+at the store. `src/worker.js` counts the hit server-side in Workers Analytics
+Engine (dataset `store_clicks`, binding `STORE_CLICKS`, declared in
+`wrangler.jsonc`) and 302s to the store — ad-blockers cannot see it. If the
+binding is missing the redirect still works and nothing is counted.
 
 `analytics.js` (served from the apex, loaded by the site and the blog) adds
 cookieless PostHog page views and a `store_click` event with the same `src`,

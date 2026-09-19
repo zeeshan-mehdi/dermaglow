@@ -1,0 +1,9 @@
+# Not part of the served site.
+.git
+.github
+.wrangler
+blog
+src
+wrangler.jsonc
+README.md
+.assetsignore

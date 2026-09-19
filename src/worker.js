@@ -1,13 +1,15 @@
-// /get/ios and /get/android — count the click, then send the visitor on.
+// The apex Worker. Static assets serve everything that exists on disk;
+// this script only sees requests that match no file, and handles one route:
 //
-// Every store link on the site and the blog points here instead of at the
-// store directly, so the count is taken server-side: an ad-blocker cannot
-// see it, and it costs the visitor one 302. Each hit is one row in the
-// Workers Analytics Engine dataset bound as STORE_CLICKS (Pages project →
-// Settings → Bindings → Analytics Engine → variable name STORE_CLICKS,
-// dataset store_clicks). If the binding is missing the redirect still
-// works and nothing is counted — the link must never break because the
-// counter is unconfigured.
+//   /get/ios, /get/android — count the click, then send the visitor on.
+//
+// Every store link on the site and the blog can point here instead of at
+// the store directly, so the count is taken server-side: an ad-blocker
+// cannot see it, and it costs the visitor one 302. Each hit is one row in
+// the Workers Analytics Engine dataset bound as STORE_CLICKS (declared in
+// wrangler.jsonc). If the binding is missing the redirect still works and
+// nothing is counted — the link must never break because the counter is
+// unconfigured.
 //
 // Query it in the Cloudflare dashboard (Analytics Engine → SQL):
 //   SELECT blob1 AS store, blob2 AS src, count() AS clicks
@@ -32,12 +34,20 @@ function deviceClass(ua) {
   return "desktop";
 }
 
-export async function onRequestGet({ request, params, env }) {
-  const store = String(params.store || "").toLowerCase();
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const m = url.pathname.match(/^\/get\/([a-z]+)\/?$/);
+    if (m && request.method === "GET") return storeRedirect(request, env, m[1], url);
+    // Anything else: the static site, including _redirects and _headers.
+    return env.ASSETS.fetch(request);
+  },
+};
+
+async function storeRedirect(request, env, store, url) {
   const target = STORES[store];
   if (!target) return new Response("Not found", { status: 404 });
 
-  const url = new URL(request.url);
   const src = (url.searchParams.get("src") || "direct").slice(0, 40);
   const referrer = request.headers.get("Referer") || "";
   let referrerHost = "";
