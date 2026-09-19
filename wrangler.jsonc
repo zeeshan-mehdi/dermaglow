@@ -9,7 +9,12 @@
   "compatibility_date": "2026-09-01",
   "assets": {
     "directory": ".",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // By default a request that matches a file is answered by the asset
+    // layer and the script never runs — so nothing was counted. Run the
+    // script first for HTML pages (and the /get and /stats routes, which
+    // have no file anyway); images, CSS and scripts still bypass it.
+    "run_worker_first": ["/", "/*/", "/*.html", "/get/*", "/stats"]
   },
   // Not secret; the secrets (STATS_PASSWORD, CF_ANALYTICS_TOKEN) live in the
   // dashboard so they never touch the repo.
