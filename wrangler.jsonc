@@ -15,6 +15,7 @@
   // dashboard so they never touch the repo.
   "vars": { "CF_ACCOUNT_ID": "b808b1910bd47c091095f22481164337" },
   "analytics_engine_datasets": [
-    { "binding": "STORE_CLICKS", "dataset": "store_clicks" }
+    { "binding": "STORE_CLICKS", "dataset": "store_clicks" },
+    { "binding": "PAGE_VIEWS", "dataset": "page_views" }
   ]
 }

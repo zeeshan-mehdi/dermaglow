@@ -20,28 +20,25 @@
 // the placement; the referrer names the page. Together they answer "which
 // button, on which page, from where".
 
+import { deviceClass, trackPageView } from "./track.js";
+
 const STORES = {
   ios: "https://apps.apple.com/app/id6790204292",
   android: "https://play.google.com/store/apps/details?id=com.app.dermaglow",
 };
 
-// A stable, short label for the client, without the user agent itself —
-// the UA string is high-cardinality and not something worth storing per click.
-function deviceClass(ua) {
-  if (/iPhone|iPad|iPod/i.test(ua)) return "ios";
-  if (/Android/i.test(ua)) return "android";
-  if (/bot|crawl|spider|preview|facebookexternalhit|Slackbot|WhatsApp/i.test(ua)) return "bot";
-  return "desktop";
-}
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const m = url.pathname.match(/^\/get\/([a-z]+)\/?$/);
     if (m && request.method === "GET") return storeRedirect(request, env, m[1], url);
     if (url.pathname === "/stats" && request.method === "GET") return stats(request, env);
-    // Anything else: the static site, including _redirects and _headers.
-    return env.ASSETS.fetch(request);
+    // Anything else: the static site, including _redirects and _headers —
+    // counted as a page view when it is an HTML page for a person.
+    const response = await env.ASSETS.fetch(request);
+    ctx.waitUntil(trackPageView(request, response, env));
+    return response;
   },
 };
 
@@ -110,7 +107,44 @@ const SQL = {
     GROUP BY country
     ORDER BY clicks DESC
     LIMIT 15 FORMAT JSON`,
+  // Page views come back grouped by visitor as well, and uniques are counted
+  // here rather than in SQL: one query, and "distinct visitors" needs no
+  // support for COUNT(DISTINCT) in the dataset's dialect.
+  viewsByDay: `
+    SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS day, blob1 AS host,
+           blob6 AS visitor, SUM(_sample_interval) AS views
+    FROM page_views
+    WHERE timestamp > NOW() - INTERVAL '30' DAY
+    GROUP BY day, host, visitor
+    LIMIT 10000 FORMAT JSON`,
+  viewsByPage: `
+    SELECT blob1 AS host, blob2 AS path, blob6 AS visitor, SUM(_sample_interval) AS views
+    FROM page_views
+    WHERE timestamp > NOW() - INTERVAL '30' DAY
+    GROUP BY host, path, visitor
+    LIMIT 10000 FORMAT JSON`,
+  viewsBySource: `
+    SELECT blob3 AS referrer, blob7 AS utm, blob6 AS visitor, SUM(_sample_interval) AS views
+    FROM page_views
+    WHERE timestamp > NOW() - INTERVAL '30' DAY
+    GROUP BY referrer, utm, visitor
+    LIMIT 10000 FORMAT JSON`,
 };
+
+/** Collapse visitor-grouped rows into {key → {visitors, views}}, sorted by visitors. */
+function rollup(rows, keyOf) {
+  const acc = new Map();
+  for (const r of rows) {
+    const k = keyOf(r);
+    const e = acc.get(k) || { ...r, visitors: new Set(), views: 0 };
+    e.visitors.add(r.visitor);
+    e.views += Number(r.views);
+    acc.set(k, e);
+  }
+  return [...acc.values()]
+    .map((e) => ({ ...e, visitors: e.visitors.size }))
+    .sort((a, b) => b.visitors - a.visitors || b.views - a.views);
+}
 
 async function stats(request, env) {
   const missing = ["STATS_PASSWORD", "CF_ANALYTICS_TOKEN", "CF_ACCOUNT_ID"].filter((k) => !env[k]);
@@ -135,9 +169,12 @@ async function stats(request, env) {
     return (await r.json()).data || [];
   };
 
-  let placements, daily, countries;
+  let placements, daily, countries, byDayRaw, byPageRaw, bySourceRaw;
   try {
-    [placements, daily, countries] = await Promise.all([run(SQL.placements), run(SQL.daily), run(SQL.countries)]);
+    [placements, daily, countries, byDayRaw, byPageRaw, bySourceRaw] = await Promise.all([
+      run(SQL.placements), run(SQL.daily), run(SQL.countries),
+      run(SQL.viewsByDay), run(SQL.viewsByPage), run(SQL.viewsBySource),
+    ]);
   } catch (err) {
     return new Response(`Could not read the dataset — ${err.message}`, {
       status: 502, headers: { "Content-Type": "text/plain; charset=utf-8" },
@@ -148,7 +185,21 @@ async function stats(request, env) {
   const byStore = {};
   for (const r of placements) byStore[r.store] = (byStore[r.store] || 0) + Number(r.clicks);
 
-  return new Response(renderStats({ total, byStore, placements, daily, countries }), {
+  const days = rollup(byDayRaw, (r) => `${String(r.day).slice(0, 10)}|${r.host}`)
+    .map((r) => ({ ...r, day: String(r.day).slice(0, 10) }))
+    .sort((a, b) => (a.day < b.day ? 1 : a.day > b.day ? -1 : a.host.localeCompare(b.host)));
+  const pages = rollup(byPageRaw, (r) => `${r.host}${r.path}`);
+  const sources = rollup(bySourceRaw, (r) => `${r.referrer}|${r.utm}`)
+    .map((r) => ({ ...r, source: r.utm ? `${r.utm} (tag)` : r.referrer || "direct / none" }));
+  // Unique visitors across the period: distinct ids over all days. An id
+  // rotates daily, so a person reading on three days counts three times —
+  // stated on the page rather than hidden.
+  const uniqueVisitors = new Set(byDayRaw.map((r) => `${String(r.day).slice(0, 10)}|${r.visitor}`)).size;
+  const pageViews = byDayRaw.reduce((n, r) => n + Number(r.views), 0);
+  const posts = pages.filter((r) => /^\/posts\//.test(r.path));
+
+  return new Response(renderStats({ total, byStore, placements, daily, countries,
+    uniqueVisitors, pageViews, days, pages, posts, sources }), {
     headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
   });
 }
@@ -174,11 +225,17 @@ async function authorised(request, password) {
 const esc = (v) => String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const n = (v) => Number(v).toLocaleString("en-GB");
 
-function renderStats({ total, byStore, placements, daily, countries }) {
+function renderStats({ total, byStore, placements, daily, countries,
+  uniqueVisitors, pageViews, days, pages, posts, sources }) {
   const rows = (arr, cols) => arr.map((r) =>
     `<tr>${cols.map((c) => `<td class="${c === "clicks" ? "n" : ""}">${c === "clicks" ? n(r[c]) : esc(r[c]) || "<span class=dim>—</span>"}</td>`).join("")}</tr>`,
   ).join("");
   const day = (r) => ({ ...r, day: String(r.day).slice(0, 10) });
+  const vv = (arr, cols) => arr.map((r) =>
+    `<tr>${cols.map((c) => `<td class="${c === "visitors" || c === "views" ? "n" : ""}">${
+      c === "visitors" || c === "views" ? n(r[c]) : esc(r[c]) || "<span class=dim>—</span>"}</td>`).join("")}</tr>`,
+  ).join("");
+  const empty = (cols) => `<tr><td colspan="${cols}" class="dim">nothing yet</td></tr>`;
   return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex"><title>Store clicks — Dermaglow</title>
 <style>
@@ -199,7 +256,30 @@ tr:last-child td{border-bottom:0}td.n{text-align:right;color:var(--mint)}.dim{co
 p.note{color:var(--on3);font-size:13px;margin:0}
 </style>
 <main>
-  <div><h1>Store-button clicks</h1><p class="sub">Last 30 days, counted server-side at /get/&lt;store&gt;. Bots excluded.</p></div>
+  <div><h1>Site &amp; blog</h1><p class="sub">Last 30 days, counted server-side on every page served. No cookies: a visitor is a daily-rotating hash of address and browser, so one person over three days counts as three. Bots excluded.</p></div>
+  <div class="tiles">
+    <div class="tile"><b>${n(uniqueVisitors)}</b><span>unique visitors</span></div>
+    <div class="tile"><b>${n(pageViews)}</b><span>page views</span></div>
+  </div>
+  <section><h2>Blog posts</h2><div class="wrap"><table>
+    <thead><tr><th>post</th><th class="n">visitors</th><th class="n">views</th></tr></thead>
+    <tbody>${vv(posts, ["path", "visitors", "views"]) || empty(3)}</tbody>
+  </table></div></section>
+  <section><h2>All pages</h2><div class="wrap"><table>
+    <thead><tr><th>host</th><th>page</th><th class="n">visitors</th><th class="n">views</th></tr></thead>
+    <tbody>${vv(pages.slice(0, 40), ["host", "path", "visitors", "views"]) || empty(4)}</tbody>
+  </table></div></section>
+  <section><h2>Sources</h2><div class="wrap"><table>
+    <thead><tr><th>where visitors came from</th><th class="n">visitors</th><th class="n">views</th></tr></thead>
+    <tbody>${vv(sources.slice(0, 30), ["source", "visitors", "views"]) || empty(3)}</tbody>
+  </table></div>
+  <p class="note">The referring site, or the ?utm_source / ?src tag on a link you shared. "direct / none" is a typed or pasted address, or an app that strips the referrer — most messaging apps do.</p></section>
+  <section><h2>Visitors by day</h2><div class="wrap"><table>
+    <thead><tr><th>day</th><th>host</th><th class="n">visitors</th><th class="n">views</th></tr></thead>
+    <tbody>${vv(days, ["day", "host", "visitors", "views"]) || empty(4)}</tbody>
+  </table></div></section>
+
+  <div style="margin-top:12px"><h1>Store-button clicks</h1><p class="sub">Counted at /get/&lt;store&gt; before the visitor is sent to the store.</p></div>
   <div class="tiles">
     <div class="tile"><b>${n(total)}</b><span>all clicks</span></div>
     ${Object.entries(byStore).map(([s, c]) => `<div class="tile"><b>${n(c)}</b><span>${esc(s)}</span></div>`).join("")}
