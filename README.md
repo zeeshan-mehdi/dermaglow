@@ -18,8 +18,12 @@ binding is missing the redirect still works and nothing is counted.
 cookieless PostHog page views and a `store_click` event with the same `src`,
 into the app's PostHog project, for the behaviour around the click.
 
-Query (Cloudflare → Analytics Engine → SQL):
+**Reading the numbers:** `https://dermaglowbeauty.com/stats` (HTTP Basic, any
+username, password = the `STATS_PASSWORD` secret). Needs two Worker secrets set
+in the dashboard (Workers & Pages → dermaglow → Settings → Variables and
+Secrets): `STATS_PASSWORD` and `CF_ANALYTICS_TOKEN` (an API token with
+Account · Account Analytics · Read). Or query the SQL API directly:
 
-    SELECT blob1 AS store, blob2 AS src, blob3 AS referrer, count() AS clicks
+    SELECT blob1 AS store, blob2 AS src, blob3 AS referrer, SUM(_sample_interval) AS clicks
     FROM store_clicks WHERE timestamp > NOW() - INTERVAL '30' DAY
     GROUP BY store, src, referrer ORDER BY clicks DESC

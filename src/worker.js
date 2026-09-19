@@ -39,6 +39,7 @@ export default {
     const url = new URL(request.url);
     const m = url.pathname.match(/^\/get\/([a-z]+)\/?$/);
     if (m && request.method === "GET") return storeRedirect(request, env, m[1], url);
+    if (url.pathname === "/stats" && request.method === "GET") return stats(request, env);
     // Anything else: the static site, including _redirects and _headers.
     return env.ASSETS.fetch(request);
   },
@@ -66,4 +67,155 @@ async function storeRedirect(request, env, store, url) {
   }
 
   return Response.redirect(target, 302);
+}
+
+
+// ── /stats — the click counts, in a browser, behind a password ─────────────
+//
+// Analytics Engine has no dashboard query UI; it has an SQL API that needs
+// an API token. This route runs the queries server-side and renders them,
+// so reading the numbers is a URL and a password rather than a curl.
+//
+// Needs two Worker secrets (Settings → Variables and Secrets, type Secret):
+//   STATS_PASSWORD      whatever you choose; HTTP Basic, any username
+//   CF_ANALYTICS_TOKEN  an API token with Account · Account Analytics · Read
+// and CF_ACCOUNT_ID as a plain var (wrangler.jsonc). Missing any of them →
+// 503 with a message saying which, never a half-working page.
+//
+// Counts use SUM(_sample_interval), not count(): Analytics Engine samples
+// under heavy write load and _sample_interval is the weight that restores
+// the true total. At this site's volume the two are identical; the habit
+// costs nothing and stays correct if a post ever goes viral.
+
+const SQL = {
+  placements: `
+    SELECT blob1 AS store, blob2 AS src, blob3 AS referrer, blob5 AS device,
+           SUM(_sample_interval) AS clicks
+    FROM store_clicks
+    WHERE timestamp > NOW() - INTERVAL '30' DAY
+    GROUP BY store, src, referrer, device
+    ORDER BY clicks DESC
+    LIMIT 200 FORMAT JSON`,
+  daily: `
+    SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS day, blob1 AS store,
+           SUM(_sample_interval) AS clicks
+    FROM store_clicks
+    WHERE timestamp > NOW() - INTERVAL '30' DAY
+    GROUP BY day, store
+    ORDER BY day DESC, store FORMAT JSON`,
+  countries: `
+    SELECT blob4 AS country, SUM(_sample_interval) AS clicks
+    FROM store_clicks
+    WHERE timestamp > NOW() - INTERVAL '30' DAY
+    GROUP BY country
+    ORDER BY clicks DESC
+    LIMIT 15 FORMAT JSON`,
+};
+
+async function stats(request, env) {
+  const missing = ["STATS_PASSWORD", "CF_ANALYTICS_TOKEN", "CF_ACCOUNT_ID"].filter((k) => !env[k]);
+  if (missing.length) {
+    return new Response(`/stats is not configured: set ${missing.join(", ")} on the Worker.`, {
+      status: 503, headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+  if (!(await authorised(request, env.STATS_PASSWORD))) {
+    return new Response("Sign in to see the numbers.", {
+      status: 401,
+      headers: { "WWW-Authenticate": 'Basic realm="dermaglow stats", charset="UTF-8"' },
+    });
+  }
+
+  const run = async (sql) => {
+    const r = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID}/analytics_engine/sql`,
+      { method: "POST", headers: { Authorization: `Bearer ${env.CF_ANALYTICS_TOKEN}` }, body: sql },
+    );
+    if (!r.ok) throw new Error(`Analytics Engine ${r.status}: ${(await r.text()).slice(0, 200)}`);
+    return (await r.json()).data || [];
+  };
+
+  let placements, daily, countries;
+  try {
+    [placements, daily, countries] = await Promise.all([run(SQL.placements), run(SQL.daily), run(SQL.countries)]);
+  } catch (err) {
+    return new Response(`Could not read the dataset — ${err.message}`, {
+      status: 502, headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+
+  const total = placements.reduce((n, r) => n + Number(r.clicks), 0);
+  const byStore = {};
+  for (const r of placements) byStore[r.store] = (byStore[r.store] || 0) + Number(r.clicks);
+
+  return new Response(renderStats({ total, byStore, placements, daily, countries }), {
+    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+  });
+}
+
+async function authorised(request, password) {
+  const h = request.headers.get("Authorization") || "";
+  if (!h.startsWith("Basic ")) return false;
+  let given;
+  try { given = atob(h.slice(6)).split(":").slice(1).join(":"); } catch { return false; }
+  // Constant-time compare on equal-length digests, so the length of the
+  // real password is not something a timing loop can learn.
+  const enc = new TextEncoder();
+  const [a, b] = await Promise.all([
+    crypto.subtle.digest("SHA-256", enc.encode(given)),
+    crypto.subtle.digest("SHA-256", enc.encode(password)),
+  ]);
+  const x = new Uint8Array(a), y = new Uint8Array(b);
+  let diff = 0;
+  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
+}
+
+const esc = (v) => String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const n = (v) => Number(v).toLocaleString("en-GB");
+
+function renderStats({ total, byStore, placements, daily, countries }) {
+  const rows = (arr, cols) => arr.map((r) =>
+    `<tr>${cols.map((c) => `<td class="${c === "clicks" ? "n" : ""}">${c === "clicks" ? n(r[c]) : esc(r[c]) || "<span class=dim>—</span>"}</td>`).join("")}</tr>`,
+  ).join("");
+  const day = (r) => ({ ...r, day: String(r.day).slice(0, 10) });
+  return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>Store clicks — Dermaglow</title>
+<style>
+:root{--night:#0B0F0D;--card:#111815;--line:#1E3229;--on:#F2F5F1;--on2:#9DB3A8;--on3:#6B7D74;--mint:#7FD1AE}
+body{margin:0;background:var(--night);color:var(--on);font:15px/1.5 system-ui,-apple-system,sans-serif;padding:32px 20px 80px}
+main{max-width:920px;margin:0 auto;display:grid;gap:28px}
+h1{font-size:22px;margin:0;font-weight:600}h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--on3);margin:0 0 10px;font-weight:600}
+.sub{color:var(--on2);margin:4px 0 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.tile b{display:block;font-size:28px;font-weight:600;color:var(--mint);font-variant-numeric:tabular-nums}
+.tile span{color:var(--on3);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:480px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--on3);font-weight:600}
+tr:last-child td{border-bottom:0}td.n{text-align:right;color:var(--mint)}.dim{color:var(--on3)}
+p.note{color:var(--on3);font-size:13px;margin:0}
+</style>
+<main>
+  <div><h1>Store-button clicks</h1><p class="sub">Last 30 days, counted server-side at /get/&lt;store&gt;. Bots excluded.</p></div>
+  <div class="tiles">
+    <div class="tile"><b>${n(total)}</b><span>all clicks</span></div>
+    ${Object.entries(byStore).map(([s, c]) => `<div class="tile"><b>${n(c)}</b><span>${esc(s)}</span></div>`).join("")}
+  </div>
+  <section><h2>By button and page</h2><div class="wrap"><table>
+    <thead><tr><th>store</th><th>button (src)</th><th>page (referrer)</th><th>device</th><th class="n">clicks</th></tr></thead>
+    <tbody>${rows(placements, ["store", "src", "referrer", "device", "clicks"]) || '<tr><td colspan="5" class="dim">nothing yet</td></tr>'}</tbody>
+  </table></div>
+  <p class="note">src is the placement tag on the link (nav, hero, blog-cta, or whatever a shared link carries). Empty page means the link was opened directly — typed, pasted, or from an app that strips the referrer.</p></section>
+  <section><h2>By day</h2><div class="wrap"><table>
+    <thead><tr><th>day</th><th>store</th><th class="n">clicks</th></tr></thead>
+    <tbody>${rows(daily.map(day), ["day", "store", "clicks"]) || '<tr><td colspan="3" class="dim">nothing yet</td></tr>'}</tbody>
+  </table></div></section>
+  <section><h2>By country</h2><div class="wrap"><table>
+    <thead><tr><th>country</th><th class="n">clicks</th></tr></thead>
+    <tbody>${rows(countries, ["country", "clicks"]) || '<tr><td colspan="2" class="dim">nothing yet</td></tr>'}</tbody>
+  </table></div></section>
+</main>`;
 }
