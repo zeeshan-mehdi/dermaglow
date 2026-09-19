@@ -26,19 +26,17 @@
     autocapture: false,
   });
 
-  // store_click: any link into /get/<store>. `src` names the placement
-  // (set on the link), `page` the path it was on. The same two fields the
-  // server-side row carries, so the two systems reconcile by name.
+  // store_click: any link marked data-store (the store buttons), whether
+  // its href goes straight to the store or through /get/<store>. `src`
+  // names the placement (data-src on the link), `page` the path it was on
+  // — the same two fields the server-side row carries, so the two systems
+  // reconcile by name.
   document.addEventListener("click", function (ev) {
-    var a = ev.target && ev.target.closest && ev.target.closest('a[href*="/get/"]');
+    var a = ev.target && ev.target.closest && ev.target.closest("a[data-store]");
     if (!a) return;
-    var href;
-    try { href = new URL(a.getAttribute("href"), location.href); } catch (_) { return; }
-    var m = href.pathname.match(/\/get\/([a-z]+)/);
-    if (!m) return;
     posthog.capture("store_click", {
-      store: m[1],
-      src: href.searchParams.get("src") || "direct",
+      store: a.getAttribute("data-store"),
+      src: a.getAttribute("data-src") || "direct",
       page: location.pathname,
       $send_beacon: true
     });
