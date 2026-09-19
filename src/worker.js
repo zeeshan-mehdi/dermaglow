@@ -36,8 +36,13 @@ export default {
     if (url.pathname === "/stats" && request.method === "GET") return stats(request, env);
     // Anything else: the static site, including _redirects and _headers —
     // counted as a page view when it is an HTML page for a person.
-    const response = await env.ASSETS.fetch(request);
-    ctx.waitUntil(trackPageView(request, response, env));
+    const asset = await env.ASSETS.fetch(request);
+    ctx.waitUntil(trackPageView(request, asset, env));
+    // Marker so "did the script run for this page?" is answerable from a
+    // response header — the asset layer's cf-cache-status says nothing
+    // about that.
+    const response = new Response(asset.body, asset);
+    response.headers.set("X-Counted", env.PAGE_VIEWS ? "1" : "0");
     return response;
   },
 };
