@@ -1,0 +1,17 @@
+{
+  // blog.dermaglowbeauty.com — static Astro build, no Worker script needed.
+  // Root directory for this service's Git-connected build is /blog (see
+  // dashboard: dermaglow-blog → Settings → Builds), so `npm run build`
+  // produces dist/ here and `npx wrangler deploy` reads this file to know
+  // what to publish. Without this file, deploy had nothing to ship and
+  // Production stayed stuck on a stale/incorrect deployment.
+  "$schema": "https://unpkg.com/wrangler/config-schema.json",
+  "name": "dermaglow-blog",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    // Astro generates its own themed 404.astro → dist/404.html; serve that
+    // instead of a bare Cloudflare 404 for any unmatched path.
+    "not_found_handling": "404-page"
+  }
+}
