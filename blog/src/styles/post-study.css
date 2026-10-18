@@ -1,6 +1,6 @@
 /* Scoped styles for long-form engineering studies (charts, section numbers,
    pull quotes, method notes). Loaded only by posts that use them. */
-.prose { --band:#D9DED2; --signal:#0E7C61; --noise:#C63C1F; --ink-3:#77807C; --ink-2:#454E4B; }
+.prose { --band:#DCE2EE; --signal:#1877F2; --noise:#C63C1F; --ink-3:#77807C; --ink-2:#454E4B; }
 
 .prose figure { margin: 32px 0; }
 .prose figure svg { width: 100%; height: auto; display: block; }
