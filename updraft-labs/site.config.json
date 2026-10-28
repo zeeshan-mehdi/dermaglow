@@ -1,0 +1,19 @@
+{
+  "_readme": "Fill these in, then run: python3 tools/configure.py   (empty string = leave out)",
+  "domain": "updraftlabs.ai",
+  "email": "hello@updraftlabs.ai",
+  "booking_url": "",
+  "location": "",
+  "founded": "2026",
+  "social": {
+    "linkedin": "",
+    "x": "",
+    "instagram": "",
+    "github": ""
+  },
+  "contact_form": {
+    "_readme": "Where form messages go and the sender address (must be on a domain verified in Resend). Empty = email above / website@domain.",
+    "to_email": "",
+    "from_email": ""
+  }
+}

@@ -112,10 +112,15 @@ tabs.forEach((t) =>
 showFit("ops");
 
 // ---------- contact form ----------
-// The site is static, so the form composes an email in the visitor's mail app.
+// Posts to /api/contact (functions/api/contact.js). If that isn't set up
+// yet, or fails, the message opens in the visitor's email app instead.
 const form = document.getElementById("contact-form");
 const note = document.getElementById("form-note");
-form.addEventListener("submit", (e) => {
+const setNote = (msg, err) => {
+  note.className = "form-note" + (err ? " err" : "");
+  note.textContent = msg;
+};
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
   let ok = true;
   form.querySelectorAll("[required]").forEach((f) => {
@@ -123,25 +128,47 @@ form.addEventListener("submit", (e) => {
     f.classList.toggle("invalid", bad);
     if (bad) ok = false;
   });
-  if (!ok) {
-    note.className = "form-note err";
-    note.textContent = "Please add your name, a valid email and a short message.";
-    return;
-  }
+  if (!ok) return setNote("Please add your name, a valid email and a short message.", true);
+
   const d = new FormData(form);
-  const interests = d.getAll("interest").join(", ") || "—";
-  const subject = `New project enquiry — ${d.get("company") || d.get("name")}`;
+  const data = {
+    name: d.get("name"),
+    email: d.get("email"),
+    company: d.get("company"),
+    interests: d.getAll("interest"),
+    message: d.get("message"),
+    website: d.get("website"),
+  };
+  const btn = form.querySelector("button[type=submit]");
+  btn.disabled = true;
+  setNote("Sending…");
+  try {
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (res.ok) {
+      form.reset();
+      return setNote("Thanks — message received. We'll reply within one business day.");
+    }
+    if (res.status === 422) return setNote("Please check your details and try again.", true);
+  } catch {
+    // network error: fall through to email
+  } finally {
+    btn.disabled = false;
+  }
+  const subject = `New project enquiry — ${data.company || data.name}`;
   const body = [
-    `Name: ${d.get("name")}`,
-    `Email: ${d.get("email")}`,
-    `Company: ${d.get("company") || "—"}`,
-    `Interested in: ${interests}`,
+    `Name: ${data.name}`,
+    `Email: ${data.email}`,
+    `Company: ${data.company || "—"}`,
+    `Interested in: ${data.interests.join(", ") || "—"}`,
     "",
-    d.get("message"),
+    data.message,
   ].join("\n");
   location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  note.className = "form-note";
-  note.textContent = `Opening your email app… If nothing happens, write to ${CONTACT_EMAIL}.`;
+  setNote(`Opening your email app… If nothing happens, write to ${CONTACT_EMAIL}.`);
 });
 form.addEventListener("input", (e) => e.target.classList.remove("invalid"));
 
