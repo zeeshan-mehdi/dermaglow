@@ -22,12 +22,21 @@
     .bk-hero p.lede { margin-top: 26px; font-size: 1.15rem; color: #aeb5c6; max-width: 520px; }
     .bk-stage { position: relative; aspect-ratio: 1; border-radius: 32px; display: grid; place-items: center; overflow: hidden;
       background: radial-gradient(55% 55% at 62% 36%, rgba(125,211,252,.18), transparent 70%), linear-gradient(#0e1530, #05070d); box-shadow: inset 0 0 0 1px var(--line); }
-    .bk-stage svg { width: 58%; height: auto; overflow: visible; }
+    .bk-stage svg { width: 56%; height: auto; overflow: visible; }
+    .bk-stage .lift { animation: lift 1.4s cubic-bezier(.16,1,.3,1) .5s both; }
+    .bk-stage .was { animation: was 1.1s ease-out .6s both; }
+    .bk-stage:hover .lift { animation: lift-hover .9s cubic-bezier(.16,1,.3,1) both; }
+    @keyframes lift { from { transform: translateY(16px); } to { transform: none; } }
+    @keyframes was { from { opacity: 1; } to { opacity: 0; } }
+    @keyframes lift-hover { 0% { transform: none; } 40% { transform: translateY(-3px); } 100% { transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .bk-stage .lift { animation: none; } .bk-stage .was { animation: none; opacity: 0; } }
     .bk-stage .lbl { position: absolute; font-family: var(--f-mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; }
     .bk-sec { padding: 72px 0; border-top: 1px solid var(--line); }
     .bk-sec h2 { font-size: clamp(1.9rem, 4vw, 2.8rem); margin-bottom: 14px; }
     .bk-sec > .wrap > p { max-width: 640px; margin-bottom: 40px; }
     .bk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .tile-wide { grid-column: 1 / -1; }
+    .tile-wide .tile-art img { max-height: 200px; }
     .tile { border-radius: 20px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); background: var(--surface); }
     .tile-art { height: 210px; display: grid; place-items: center; padding: 30px; }
     .tile-art img { max-height: 150px; max-width: 100%; }
@@ -37,7 +46,7 @@
     .tile-meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-top: 1px solid var(--line); }
     .tile-meta b { color: var(--text); font-weight: 500; font-size: .92rem; }
     .tile-meta span { display: flex; gap: 8px; }
-    .dl { font-family: var(--f-mono); font-size: .72rem; padding: 5px 9px; border-radius: 7px; color: var(--text); box-shadow: inset 0 0 0 1px var(--line-2); transition: background .2s, box-shadow .2s; }
+    .dl { cursor: pointer; border: 0; background: none; font-family: var(--f-mono); font-size: .72rem; padding: 5px 9px; border-radius: 7px; color: var(--text); box-shadow: inset 0 0 0 1px var(--line-2); transition: background .2s, box-shadow .2s; }
     .dl:hover { background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--sky); }
     .construct { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: center; }
     .construct svg { width: 100%; height: auto; background: #04060b; border-radius: 24px; box-shadow: inset 0 0 0 1px var(--line); }
@@ -98,9 +107,9 @@
         </div>
       </div>
       <div class="bk-stage">
-        <svg viewBox="24 0 72 108" aria-label="Updraft Labs mark" role="img">
-          <path d="M24 50.000 L44 40.000 L44 72.0 A16.0 16.0 0 0 0 58.000 87.875 L58.000 107.944 A36.0 36.0 0 0 1 24 72.0 Z" fill="url(#bL)"/>
-          <path d="M62.000 73.875 A16.0 16.0 0 0 0 76 58.0 L76 10.000 L96 0.000 L96 58.0 A36.0 36.0 0 0 1 62.000 93.944 Z" fill="url(#bR)"/>
+        <svg viewBox="24 -2.8 72 110.8" aria-label="Updraft Labs mark" role="img">
+          <path d="M24 42 L44 34 L44 72 A16 16 0 0 0 55.126 87.24 L63.367 107.842 A36 36 0 0 1 24 72 Z" fill="url(#bL)"/>
+          <g class="lift"><path d="M56.406 71.591 A16 16 0 0 0 76 56 L76 5.2 L96 -2.8 L96 56 A36 36 0 0 1 64.459 91.723 Z" fill="url(#bR)"/><path class="was" d="M56.406 71.591 A16 16 0 0 0 76 56 L76 5.2 L96 -2.8 L96 56 A36 36 0 0 1 64.459 91.723 Z" fill="url(#bL)"/></g>
         </svg>
         <span class="lbl" style="left:9%;bottom:8%;color:#5b8cff">Drag</span>
         <span class="lbl" style="right:9%;top:8%;color:#86f5cf">Lift</span>
@@ -109,31 +118,33 @@
 
     <section class="bk-sec">
       <div class="wrap construct">
-        <svg viewBox="0 -20 140 150" aria-label="Construction of the mark" role="img">
+        <svg viewBox="0 -24 140 154" aria-label="Construction of the mark" role="img">
           <g stroke="#2a3350" stroke-width=".3" fill="none">
             <circle cx="60" cy="72" r="36"/><circle cx="60" cy="72" r="16"/>
-            <line x1="60" y1="-16" x2="60" y2="126" stroke-dasharray="1.2 1.2"/>
           </g>
-          <line x1="10" y1="57" x2="130" y2="-3" stroke="#7dd3fc" stroke-width=".35" stroke-dasharray="1.6 1.2"/>
-          <path d="M62.000 87.875 A16.0 16.0 0 0 0 76 72.0 L76 24.000 L96 14.000 L96 72.0 A36.0 36.0 0 0 1 62.000 107.944 Z" fill="none" stroke="#86f5cf" stroke-width=".4" stroke-dasharray="1.4 1"/>
-          <path d="M24 50.000 L44 40.000 L44 72.0 A16.0 16.0 0 0 0 58.000 87.875 L58.000 107.944 A36.0 36.0 0 0 1 24 72.0 Z" fill="url(#bL)" opacity=".92"/>
-          <path d="M62.000 73.875 A16.0 16.0 0 0 0 76 58.0 L76 10.000 L96 0.000 L96 58.0 A36.0 36.0 0 0 1 62.000 93.944 Z" fill="url(#bR)" opacity=".92"/>
+          <line x1="8" y1="48.40" x2="132" y2="-1.20" stroke="#7dd3fc" stroke-width=".35" stroke-dasharray="1.6 1.2"/>
+          <line x1="53.31" y1="81.29" x2="67.43" y2="116.57" stroke="#ff7a59" stroke-width=".35" stroke-dasharray="1.6 1.2"/>
+          <g transform="translate(0 16)"><path d="M56.406 71.591 A16 16 0 0 0 76 56 L76 5.2 L96 -2.8 L96 56 A36 36 0 0 1 64.459 91.723 Z" fill="none" stroke="#86f5cf" stroke-width=".4" stroke-dasharray="1.4 1"/></g>
+          <path d="M24 42 L44 34 L44 72 A16 16 0 0 0 55.126 87.24 L63.367 107.842 A36 36 0 0 1 24 72 Z" fill="url(#bL)" opacity=".92"/>
+          <path d="M56.406 71.591 A16 16 0 0 0 76 56 L76 5.2 L96 -2.8 L96 56 A36 36 0 0 1 64.459 91.723 Z" fill="url(#bR)" opacity=".92"/>
           <g stroke="#eef1f7" stroke-width=".35" fill="#eef1f7">
-            <line x1="104" y1="14" x2="104" y2="1.5"/><path d="M102.6 3.2 L104 0.6 L105.4 3.2 Z" stroke="none"/>
-            <line x1="101.5" y1="14" x2="106.5" y2="14"/>
+            <line x1="104" y1="13.20" x2="104" y2="-1.40"/><path d="M102.6 -1.10 L104 -3.70 L105.4 -1.10 Z" stroke="none"/>
+            <line x1="101.5" y1="13.20" x2="106.5" y2="13.20"/>
           </g>
           <g font-family="Geist Mono, monospace" font-size="3.1" fill="#949cb0" letter-spacing=".2">
-            <text x="107" y="22">LIFT = 7/18 R</text>
-            <text x="10" y="-8">ONE RISING LINE</text>
-            <text x="64" y="124">GAP 4 · R 36 · r 16</text>
+            <text x="108" y="14.20">LIFT 4/9 R</text>
+            <text x="8" y="-14">ONE RISING LINE · 2:5</text>
+            <text x="37.43" y="117.57" fill="#ff7a59">THE SLICE</text>
+            <text x="70" y="126">GAP 7 · R 36 · r 16</text>
           </g>
         </svg>
         <div class="rules">
           <p class="eyebrow">Construction</p>
           <h2>Built from <em>one idea.</em></h2>
           <div class="rule"><i>01</i><div><b>Two concentric arcs</b>An outer radius of 36 and an inner of 16 give arms 20 units thick: heavy enough to read at 16px.</div></div>
-          <div class="rule"><i>02</i><div><b>One rising line</b>Both arm tops are cut along the same 1:2 slope. The dashed outline shows where the right half sat before it rose.</div></div>
-          <div class="rule"><i>03</i><div><b>The lift</b>The right half rises 14 units, exactly 7/18 of the outer radius, and turns from deep blue to mint as it goes.</div></div>
+          <div class="rule"><i>02</i><div><b>One rising line</b>Both arm tops are cut along the same 2:5 slope, the blue dashed line.</div></div>
+          <div class="rule"><i>03</i><div><b>One slice, square to it</b>The U is cut at right angles to the rising line, so every straight edge in the mark runs one of two ways.</div></div>
+          <div class="rule"><i>04</i><div><b>The lift</b>The right half rises 16 units (4/9 of the outer radius) from where it sat, dashed, and turns from deep blue to mint as it goes.</div></div>
         </div>
       </div>
     </section>
@@ -150,9 +161,10 @@
           <div class="tile"><div class="tile-art dark"><img src="/brand/updraft-logo-stacked-dark-bg.svg" alt="Stacked logo"></div><div class="tile-meta"><b>Stacked</b><span><a class="dl" href="/brand/updraft-logo-stacked-dark-bg.svg" download>Dark</a><a class="dl" href="/brand/updraft-logo-stacked-light-bg.svg" download>Light</a></span></div></div>
           <div class="tile"><div class="tile-art grad"><img src="/brand/updraft-logo-white.svg" alt="White logo"></div><div class="tile-meta"><b>One colour</b><span><a class="dl" href="/brand/updraft-logo-white.svg" download>White</a><a class="dl" href="/brand/updraft-logo-black.svg" download>Black</a></span></div></div>
           <div class="tile"><div class="tile-art dark"><img src="/brand/updraft-mark-dark-bg.svg" alt="Mark only" style="height:140px"></div><div class="tile-meta"><b>Mark</b><span><a class="dl" href="/brand/updraft-mark-dark-bg.svg" download>Dark</a><a class="dl" href="/brand/updraft-mark-light-bg.svg" download>Light</a><a class="dl" href="/brand/updraft-mark-white.svg" download>White</a></span></div></div>
+          <div class="tile"><div class="tile-art dark"><img src="/brand/updraft-mark-animated.svg" alt="Animated mark" style="height:140px" id="anim-preview"></div><div class="tile-meta"><b>Animated mark</b><span><button class="dl" type="button" onclick="var i=document.getElementById('anim-preview');i.src=i.src.split('?')[0]+'?'+Date.now()">Replay</button><a class="dl" href="/brand/updraft-mark-animated.svg" download>SVG</a><a class="dl" href="/brand/updraft-logo-dark-bg-animated.svg" download>Logo</a></span></div></div>
           <div class="tile"><div class="tile-art dark"><img src="/brand/updraft-app-icon.svg" alt="App icon" style="height:150px"></div><div class="tile-meta"><b>App icon / avatar</b><span><a class="dl" href="/brand/updraft-app-icon-1024.png" download>1024</a><a class="dl" href="/brand/updraft-social-avatar.png" download>Social</a></span></div></div>
-          <div class="tile"><div class="tile-art dark"><img src="/brand/updraft-linkedin-banner.png" alt="LinkedIn banner"></div><div class="tile-meta"><b>LinkedIn banner</b><span><a class="dl" href="/brand/updraft-linkedin-banner.png" download>PNG</a></span></div></div>
           <div class="tile"><div class="tile-art dark"><img src="/assets/og.png" alt="Link preview image"></div><div class="tile-meta"><b>Link preview</b><span><a class="dl" href="/assets/og.png" download>PNG</a></span></div></div>
+          <div class="tile tile-wide"><div class="tile-art dark" style="height:260px"><img src="/brand/updraft-linkedin-banner.png" alt="LinkedIn banner"></div><div class="tile-meta"><b>LinkedIn banner</b><span><a class="dl" href="/brand/updraft-linkedin-banner.png" download>PNG</a></span></div></div>
         </div>
       </div>
     </section>
@@ -163,10 +175,10 @@
         <h2>Give it <em>room to rise.</em></h2>
         <p>Keep clear space around the logo equal to the width of one arm of the mark. Don't use the full logo smaller than 96px wide, or the mark smaller than 16px tall; below that, use the favicon version, which has a wider gap.</p>
         <div class="donts">
-          <div class="dont"><div class="art"><svg viewBox="24 0 72 108"><g transform="rotate(-18 60 54)"><path d="M24 50.000 L44 40.000 L44 72.0 A16.0 16.0 0 0 0 58.000 87.875 L58.000 107.944 A36.0 36.0 0 0 1 24 72.0 Z" fill="url(#bL)"/><path d="M62.000 73.875 A16.0 16.0 0 0 0 76 58.0 L76 10.000 L96 0.000 L96 58.0 A36.0 36.0 0 0 1 62.000 93.944 Z" fill="url(#bR)"/></g></svg></div><p>Don't rotate or tilt it.</p></div>
-          <div class="dont"><div class="art"><svg viewBox="24 0 72 108"><path d="M24 50.000 L44 40.000 L44 72.0 A16.0 16.0 0 0 0 58.000 87.875 L58.000 107.944 A36.0 36.0 0 0 1 24 72.0 Z" fill="url(#bR)"/><path d="M62.000 73.875 A16.0 16.0 0 0 0 76 58.0 L76 10.000 L96 0.000 L96 58.0 A36.0 36.0 0 0 1 62.000 93.944 Z" fill="url(#bL)"/></svg></div><p>Don't swap the colours. The lift is always the bright half.</p></div>
-          <div class="dont"><div class="art"><svg viewBox="24 0 72 108"><path d="M24 50 L44 40 L44 72 A16 16 0 0 0 76 72 L76 24 L96 14 L96 72 A36 36 0 0 1 24 72 Z" fill="url(#bL)"/></svg></div><p>Don't close the gap or level the halves.</p></div>
-          <div class="dont"><div class="art"><svg viewBox="24 0 72 108" preserveAspectRatio="none" style="width:150px;height:70px"><path d="M24 50.000 L44 40.000 L44 72.0 A16.0 16.0 0 0 0 58.000 87.875 L58.000 107.944 A36.0 36.0 0 0 1 24 72.0 Z" fill="url(#bL)"/><path d="M62.000 73.875 A16.0 16.0 0 0 0 76 58.0 L76 10.000 L96 0.000 L96 58.0 A36.0 36.0 0 0 1 62.000 93.944 Z" fill="url(#bR)"/></svg></div><p>Don't stretch, squash or add effects.</p></div>
+          <div class="dont"><div class="art"><svg viewBox="24 -2.8 72 110.8"><g transform="rotate(-18 60 53)"><path d="M24 42 L44 34 L44 72 A16 16 0 0 0 55.126 87.24 L63.367 107.842 A36 36 0 0 1 24 72 Z" fill="url(#bL)"/><path d="M56.406 71.591 A16 16 0 0 0 76 56 L76 5.2 L96 -2.8 L96 56 A36 36 0 0 1 64.459 91.723 Z" fill="url(#bR)"/></g></svg></div><p>Don't rotate or tilt it.</p></div>
+          <div class="dont"><div class="art"><svg viewBox="24 -2.8 72 110.8"><path d="M24 42 L44 34 L44 72 A16 16 0 0 0 55.126 87.24 L63.367 107.842 A36 36 0 0 1 24 72 Z" fill="url(#bR)"/><path d="M56.406 71.591 A16 16 0 0 0 76 56 L76 5.2 L96 -2.8 L96 56 A36 36 0 0 1 64.459 91.723 Z" fill="url(#bL)"/></svg></div><p>Don't swap the colours. The lift is always the bright half.</p></div>
+          <div class="dont"><div class="art"><svg viewBox="24 -2.8 72 110.8"><path d="M24 42 L44 34 L44 72 A16 16 0 0 0 76 72 L76 21.2 L96 13.2 L96 72 A36 36 0 0 1 24 72 Z" fill="url(#bL)"/></svg></div><p>Don't close the gap or level the halves.</p></div>
+          <div class="dont"><div class="art"><svg viewBox="24 -2.8 72 110.8" preserveAspectRatio="none" style="width:150px;height:70px"><path d="M24 42 L44 34 L44 72 A16 16 0 0 0 55.126 87.24 L63.367 107.842 A36 36 0 0 1 24 72 Z" fill="url(#bL)"/><path d="M56.406 71.591 A16 16 0 0 0 76 56 L76 5.2 L96 -2.8 L96 56 A36 36 0 0 1 64.459 91.723 Z" fill="url(#bR)"/></svg></div><p>Don't stretch, squash or add effects.</p></div>
         </div>
       </div>
     </section>
@@ -221,7 +233,7 @@
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
       <linearGradient id="bL" gradientUnits="userSpaceOnUse" x1="24" y1="108" x2="60" y2="40"><stop offset="0" stop-color="#3A5EF0"/><stop offset="1" stop-color="#5B8CFF"/></linearGradient>
-      <linearGradient id="bR" gradientUnits="userSpaceOnUse" x1="60" y1="96" x2="96" y2="0"><stop offset="0" stop-color="#6FC8FF"/><stop offset="1" stop-color="#86F5CF"/></linearGradient>
+      <linearGradient id="bR" gradientUnits="userSpaceOnUse" x1="60" y1="96" x2="96" y2="-3"><stop offset="0" stop-color="#6FC8FF"/><stop offset="1" stop-color="#86F5CF"/></linearGradient>
     </defs>
   </svg>
 </body>

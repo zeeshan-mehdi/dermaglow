@@ -14,31 +14,49 @@ FONTS = {
 }
 
 # ---------------------------------------------------------------- the mark
-# A U cut in two. The left half (drag) stays put; the right half (lift) has
-# risen. Arm tops are cut along one rising line.
+# v2. A U sliced in two. The left half (drag) stays put; the right half (lift)
+# has risen. Arm tops sit on one rising line (slope 2:5) and the slice is cut
+# at right angles to it, so every straight edge shares one of two directions.
 CX, CY, R, r = 60.0, 72.0, 36.0, 16.0
+SLOPE = -0.4            # rising line: y falls 2 for every 5 across
+Y0 = 42.0               # rising line height at the left arm's outer edge
+LIFT = 16.0             # how far the right half has risen (4/9 of R)
+GAP = 7.0               # visible gap between the halves after the lift
+CUT_DEG = -math.degrees(math.atan(abs(SLOPE)))  # slice is square to the rising line
 
 
-def mark_paths(gap=4.0, lift=14.0, y0=50.0, slope=-0.5, aligned=False):
+def mark_paths(gap=GAP, lift=LIFT, y0=Y0, slope=SLOPE, cut_deg=None, R=R, r=r):
+    """Return (left_d, right_d, bbox). `gap` is the visible gap after the lift."""
+    if cut_deg is None:
+        cut_deg = -math.degrees(math.atan(abs(slope)))
+    a = math.radians(cut_deg)
+    d = (math.sin(a), -math.cos(a))   # along the slice, pointing up
+    n = (math.cos(a), math.sin(a))    # across the slice
+    # a vertical lift also moves the right half across the slice; compensate
+    g = gap - lift * abs(math.sin(a))
+    xl0, xl1, xr0, xr1 = CX - R, CX - r, CX + r, CX + R
+    px, py = CX, CY + (R + r) / 2      # slice passes mid-thickness at the bottom
+
     def top(x):
-        return y0 + slope * (x - 24)
+        return y0 + slope * (x - xl0)
 
-    hx = gap / 2
-    ox = CX - hx
-    oy = CY + math.sqrt(R * R - (ox - CX) ** 2)
-    iy = CY + math.sqrt(r * r - (ox - CX) ** 2)
-    left = (f"M24 {top(24):.3f} L44 {top(44):.3f} L44 {CY} A{r} {r} 0 0 0 {ox:.3f} {iy:.3f} "
-            f"L{ox:.3f} {oy:.3f} A{R} {R} 0 0 1 24 {CY} Z")
-    ox2 = CX + hx
-    oy2 = CY + math.sqrt(R * R - (ox2 - CX) ** 2) - lift
-    iy2 = CY + math.sqrt(r * r - (ox2 - CX) ** 2) - lift
-    cy = CY - lift
-    t76, t96 = (top(76), top(96)) if aligned else (top(76) - lift, top(96) - lift)
-    right = (f"M{ox2:.3f} {iy2:.3f} A{r} {r} 0 0 0 76 {cy} L76 {t76:.3f} L96 {t96:.3f} "
-             f"L96 {cy} A{R} {R} 0 0 1 {ox2:.3f} {oy2:.3f} Z")
-    # bounds
-    ys = [top(24), CY + R, t96]
-    return left, right, (24.0, min(ys), 96.0, CY + R)
+    def hit(rad, off):
+        qx, qy = px + n[0] * off - CX, py + n[1] * off - CY
+        b = 2 * (qx * d[0] + qy * d[1])
+        c = qx * qx + qy * qy - rad * rad
+        disc = math.sqrt(b * b - 4 * c)
+        pts = [(CX + qx + t * d[0], CY + qy + t * d[1]) for t in ((-b + disc) / 2, (-b - disc) / 2)]
+        return max((p for p in pts if p[1] >= CY), key=lambda p: p[1])
+
+    lo, li, ro, ri = hit(R, -g / 2), hit(r, -g / 2), hit(R, g / 2), hit(r, g / 2)
+    f = lambda v: f"{v:.3f}".rstrip("0").rstrip(".")
+    left = (f"M{f(xl0)} {f(top(xl0))} L{f(xl1)} {f(top(xl1))} L{f(xl1)} {f(CY)} "
+            f"A{f(r)} {f(r)} 0 0 0 {f(li[0])} {f(li[1])} L{f(lo[0])} {f(lo[1])} "
+            f"A{f(R)} {f(R)} 0 0 1 {f(xl0)} {f(CY)} Z")
+    P = lambda x, y: f"{f(x)} {f(y - lift)}"
+    right = (f"M{P(*ri)} A{f(r)} {f(r)} 0 0 0 {P(xr0, CY)} L{P(xr0, top(xr0))} "
+             f"L{P(xr1, top(xr1))} L{P(xr1, CY)} A{f(R)} {f(R)} 0 0 1 {P(*ro)} Z")
+    return left, right, (xl0, top(xr1) - lift, xr1, max(lo[1], CY + R))
 
 
 # ---------------------------------------------------------------- type

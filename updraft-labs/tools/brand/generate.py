@@ -1,7 +1,7 @@
 """Generate the Updraft Labs logo system (SVG) into an output folder."""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from brand import mark_paths, text_path, cap_height
+from brand import mark_paths, text_path, cap_height, LIFT
 
 OUT = sys.argv[1]
 os.makedirs(OUT, exist_ok=True)
@@ -22,16 +22,27 @@ def grads(p, pre="u"):
     # gradients in mark user space so every lockup shades identically
     return (f'<linearGradient id="{pre}L" gradientUnits="userSpaceOnUse" x1="24" y1="108" x2="60" y2="40">'
             f'<stop offset="0" stop-color="{p["l0"]}"/><stop offset="1" stop-color="{p["l1"]}"/></linearGradient>'
-            f'<linearGradient id="{pre}R" gradientUnits="userSpaceOnUse" x1="60" y1="96" x2="96" y2="0">'
+            f'<linearGradient id="{pre}R" gradientUnits="userSpaceOnUse" x1="60" y1="96" x2="96" y2="-3">'
             f'<stop offset="0" stop-color="{p["r0"]}"/><stop offset="1" stop-color="{p["r1"]}"/></linearGradient>')
 
 
-def mark_group(x, y, h, fill=None, pre="u"):
+def mark_group(x, y, h, fill=None, pre="u", animate=False):
     s = h / MH
     fl = fill or f"url(#{pre}L)"
     fr = fill or f"url(#{pre}R)"
+    right = f'<path d="{RP}" fill="{fr}"/>'
+    if animate:
+        # starts as a whole blue U, then the right half rises and brightens
+        right = f'<g class="lift">{right}<path class="was" d="{RP}" fill="{fl}"/></g>'
     return (f'<g transform="translate({x - bx0 * s:.3f} {y - by0 * s:.3f}) scale({s:.5f})">'
-            f'<path d="{L}" fill="{fl}"/><path d="{RP}" fill="{fr}"/></g>')
+            f'<path d="{L}" fill="{fl}"/>{right}</g>')
+
+
+ANIM = ("<style>.lift{animation:lift 1.25s cubic-bezier(.16,1,.3,1) .35s both}"
+        ".was{animation:was 1s ease-out .45s both}"
+        f"@keyframes lift{{from{{transform:translateY({LIFT:g}px)}}to{{transform:none}}}}"
+        "@keyframes was{from{opacity:1}to{opacity:0}}"
+        "@media (prefers-reduced-motion:reduce){.lift{animation:none}.was{animation:none;opacity:0}}</style>")
 
 
 def svg(w, h, body, defs="", title="Updraft Labs"):
@@ -52,6 +63,7 @@ for mode in ("dark", "light"):
     write(f"updraft-mark-{mode}-bg.svg", svg(MW, MH, mark_group(0, 0, MH), grads(p), "Updraft Labs mark"))
 write("updraft-mark-white.svg", svg(MW, MH, mark_group(0, 0, MH, "#FFFFFF"), title="Updraft Labs mark"))
 write("updraft-mark-black.svg", svg(MW, MH, mark_group(0, 0, MH, INK), title="Updraft Labs mark"))
+write("updraft-mark-animated.svg", svg(MW, MH, mark_group(0, 0, MH, animate=True), grads(PALETTES["dark"]) + ANIM, "Updraft Labs mark"))
 
 
 # ---------- wordmark helpers
@@ -79,7 +91,7 @@ def tgrad(p):
 
 
 # ---------- horizontal lockup: mark height = 2 x cap height, centred on caps
-def horizontal(p, solid=None, serif=False):
+def horizontal(p, solid=None, serif=False, animate=False):
     mh = CAP * 2.0
     mw = MW * mh / MH
     gap = SIZE * 0.34
@@ -89,7 +101,7 @@ def horizontal(p, solid=None, serif=False):
     W = mw + gap + ww
     descender = SIZE * 0.24
     H = max(mh, base + descender)
-    body = mark_group(0, top, mh, solid) + words
+    body = mark_group(0, top, mh, solid, animate=animate) + words
     return W, H, body
 
 
@@ -99,6 +111,8 @@ for mode in ("dark", "light"):
         W, H, body = horizontal(p, serif=serif)
         tag = "-expressive" if serif else ""
         write(f"updraft-logo{tag}-{mode}-bg.svg", svg(W, H, body, grads(p) + tgrad(p)))
+W, H, body = horizontal(PALETTES["dark"], animate=True)
+write("updraft-logo-dark-bg-animated.svg", svg(W, H, body, grads(PALETTES["dark"]) + tgrad(PALETTES["dark"]) + ANIM))
 for col, nm in (("#FFFFFF", "white"), (INK, "black")):
     W, H, body = horizontal(PALETTES["dark"], solid=col)
     write(f"updraft-logo-{nm}.svg", svg(W, H, body))
@@ -147,7 +161,7 @@ def app_icon(size=1024, radius=0.225):
 write("updraft-app-icon.svg", app_icon())
 
 # ---------- favicon: adapts to light/dark browser chrome; wider gap so the split survives 16px
-Lf, Rf, (fx0, fy0, fx1, fy1) = mark_paths(gap=8, lift=16)
+Lf, Rf, (fx0, fy0, fx1, fy1) = mark_paths(gap=11, lift=18)
 fw, fh = fx1 - fx0, fy1 - fy0
 side = max(fw, fh) + 8
 ox, oy = (side - fw) / 2 - fx0, (side - fh) / 2 - fy0
