@@ -35,7 +35,7 @@ if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[a-z]{2,}", email):
     sys.exit(f"email looks wrong: {email!r}")
 
 # Pages listed in the sitemap: path -> file
-PAGES = {"/": "index.html", "/privacy/": "privacy/index.html"}
+PAGES = {"/": "index.html", "/brand/": "brand/index.html", "/privacy/": "privacy/index.html"}
 
 ICONS = {
     "linkedin": ("LinkedIn", '<path d="M6.5 9.5v8M6.5 6.5v.01M10.5 17.5v-8M10.5 13a3 3 0 016 0v4.5"/>'),
@@ -65,7 +65,7 @@ org = {
     "@type": "Organization",
     "name": "Updraft Labs",
     "url": base + "/",
-    "logo": base + "/assets/mark.svg",
+    "logo": base + "/brand/updraft-app-icon-512.png",
     "email": email,
     "description": "AI and software studio that finds bottlenecks in businesses and builds the AI and software that removes them.",
     "foundingDate": cfg.get("founded", ""),
@@ -113,7 +113,7 @@ t = re.sub(r'<a href="[^"]*"([^>]*) data-book>', lambda m: f'<a href="{e(booking
 p.write_text(emails(t))
 
 # other pages
-for f in ["404.html", "privacy/index.html"]:
+for f in ["404.html", "privacy/index.html", "brand/index.html"]:
     q = ROOT / f
     if q.exists():
         s = emails(q.read_text())

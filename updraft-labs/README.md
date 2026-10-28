@@ -9,10 +9,12 @@ public/                 everything visitors see (Cloudflare serves only this fol
   privacy/              privacy policy
   404.html, _headers    not-found page; security + cache headers
   robots.txt, sitemap.xml   generated — don't edit by hand
-  assets/               logo, social-share image, project screenshots
+  brand/                logo system (SVG + PNG), app icon, favicon, social images, brand page, kit zip
+  assets/               social-share image, apple-touch icon, project screenshots
 functions/api/contact.js    POST /api/contact → emails the form to you (via Resend)
 site.config.json        domain, email, booking link, location, socials  ← edit this
 tools/configure.py      applies site.config.json everywhere
+tools/brand/            code that generates the logo files (see its README)
 wrangler.jsonc          generated Pages config
 ```
 
