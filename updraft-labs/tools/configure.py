@@ -135,7 +135,7 @@ urls = "".join(f"  <url><loc>{base}{path}</loc><lastmod>{today}</lastmod></url>\
 
 # wrangler.jsonc — Pages project config; vars are read by functions/api/contact.js
 wr = {
-    "name": "updraft-labs",
+    "name": "updraft",  # the Cloudflare Pages project name
     "pages_build_output_dir": "public",
     "compatibility_date": "2026-09-01",
     "vars": {
