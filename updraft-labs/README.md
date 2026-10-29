@@ -36,7 +36,9 @@ social icons, `robots.txt`, `sitemap.xml` and `wrangler.jsonc`. Safe to re-run.
 | `social.*` | full profile URLs | empty ones are hidden |
 | `contact_form.to_email` | | optional — inbox for form messages (defaults to `email`) |
 
-**2. Create the Cloudflare Worker.** (Live now as the `updraft` Worker.)
+**2. Create the Cloudflare Worker.** Live now as the `updraft` Worker: https://updraft.zeeshanmehdi.com
+(also https://updraft.zeeshanmehdi18.workers.dev). Workers Logs are on (`observability` in
+wrangler.jsonc, set via `tools/configure.py`): Worker → Observability to read them.
 Workers & Pages → Create → Import a repository → pick the repo. Root directory:
 **`updraft-labs`** (or empty once this lives in its own repo); deploy command: `npx wrangler deploy`
 (the default); build command: empty. Then Settings → Build → Git branch → the branch to deploy.

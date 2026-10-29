@@ -144,6 +144,16 @@ wr = {
         "not_found_handling": "404-page",
         "run_worker_first": ["/api/*"],
     },
+    # Workers Logs (as set in the dashboard): request logs kept and searchable,
+    # error grouping on; tracing off.
+    "observability": {
+        "enabled": False,
+        "head_sampling_rate": 1,
+        "redact_query_string": False,
+        "logs": {"enabled": True, "head_sampling_rate": 1, "invocation_logs": True, "persist": True},
+        "traces": {"enabled": False, "head_sampling_rate": 1, "persist": True},
+        "issues": {"enabled": True},
+    },
     "vars": {
         "CONTACT_TO": form.get("to_email") or email,
         "CONTACT_FROM": form.get("from_email") or f"website@{domain}",
