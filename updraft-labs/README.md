@@ -2,7 +2,7 @@
 
 Static site served by a Cloudflare Worker (static assets), plus one small route for the contact form. No build step.
 
-Design system ("flight lab"): near-neutral paper and ink, flat colour (blue = drag, mint = lift, windsock orange = anything you can press), Bricolage Grotesque headlines, Geist body, Geist Mono labels, and the Fig. 01 wind-tunnel figure built from the logo's slice. Full guide at `/brand/`.
+Design ("clear air"): white and light grey with navy text, Updraft Blue as the one accent, Geist throughout, calm cards and plenty of space. Full guide at `/brand/`.
 
 ```
 public/                 everything visitors see (Cloudflare serves only this folder)

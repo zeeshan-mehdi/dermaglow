@@ -146,8 +146,8 @@ def app_icon(size=1024, radius=0.225):
     x = (size - mw) / 2 - size * 0.005
     y = (size - mh) / 2 + size * 0.012
     defs = grads(p)
-    # flat ink tile, like the site: no glow, no gradient behind the mark
-    body = f'<rect width="{size}" height="{size}" rx="{rr}" fill="#121211"/>' + mark_group(x, y, mh)
+    # flat navy tile, the site's dark colour
+    body = f'<rect width="{size}" height="{size}" rx="{rr}" fill="#0B1020"/>' + mark_group(x, y, mh)
     return svg(size, size, body, defs, "Updraft Labs")
 
 

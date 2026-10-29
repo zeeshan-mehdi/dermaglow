@@ -19,35 +19,32 @@ def sized(svg, h):
 
 
 mark, logo = read("updraft-mark-dark-bg.svg"), read("updraft-logo-light-bg.svg")
-MAINJS = open(os.path.join(PUB, "main.js")).read()
-FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800'
-         '&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap">')
-CSS = ("<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#F4F4F1;color:#121211;font-family:Geist;position:relative;overflow:hidden}"
-       ".h{font-family:'Bricolage Grotesque';font-weight:760;font-variation-settings:'opsz' 96,'wdth' 92;letter-spacing:-0.025em;line-height:.92}"
-       ".h em{font-style:normal;color:#2443D6}.m{font-family:'Geist Mono';text-transform:uppercase;letter-spacing:.08em}"
-       ".fig{position:absolute;top:0;bottom:0;background:#EAEAE6;border-left:1px solid #121211}.fig canvas{width:100%;height:100%;display:block}"
-       ".tag{position:absolute;font-family:'Geist Mono';font-size:15px;letter-spacing:.08em;text-transform:uppercase;background:#F4F4F1;padding:6px 10px;box-shadow:inset 0 0 0 1.5px #121211}"
-       ".frame{position:absolute;inset:0 26px;border-left:1.5px solid #121211;border-right:1.5px solid #121211;pointer-events:none}</style>")
+# both SVGs name their gradients uL/uR; rename the mark's so each keeps its own colours
+mark = mark.replace('id="uL"', 'id="mL"').replace("url(#uL)", "url(#mL)").replace('id="uR"', 'id="mR"').replace("url(#uR)", "url(#mR)")
+FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&display=swap">'
+CSS = ("<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#fff;color:#0B1020;font-family:Geist;position:relative;overflow:hidden}"
+       ".h{font-weight:600;letter-spacing:-0.04em;line-height:1.02}.h span{color:#2443D6}.s{color:#687084}"
+       ".panel{position:absolute;top:0;bottom:0;display:grid;place-items:center;"
+       "background:radial-gradient(closest-side at 60% 40%,rgba(63,109,245,.35),transparent),#0B1020}</style>")
 
 
 def page(w, h, inner):
-    return (f"<html><head>{FONTS}{CSS}</head><body style='width:{w}px;height:{h}px'>{inner}"
-            f"<div class='frame'></div><script>{MAINJS}</script></body></html>")
+    return f"<html><head>{FONTS}{CSS}</head><body style='width:{w}px;height:{h}px'>{inner}</body></html>"
 
 
 og = page(1200, 630, f"""
-<div style="position:absolute;left:66px;top:58px">{sized(logo, 46)}</div>
-<div class="h" style="position:absolute;left:64px;top:214px;font-size:98px">Find the drag.<br><em>Add the lift.</em></div>
-<div class="m" style="position:absolute;left:66px;bottom:60px;font-size:17px">AI · Software · Design · Growth</div>
-<div class="fig" style="left:660px;right:26px"><canvas id="tunnel"></canvas><span class="tag" style="left:16px;top:16px">Fig. 01 — The lift</span></div>""")
+<div style="position:absolute;left:72px;top:64px">{sized(logo, 44)}</div>
+<div class="h" style="position:absolute;left:70px;top:206px;font-size:90px">Find the drag.<br><span>Add the lift.</span></div>
+<div class="s" style="position:absolute;left:72px;bottom:66px;font-size:24px">AI &amp; software studio</div>
+<div class="panel" style="left:780px;right:0">{sized(mark, 300)}</div>""")
 
 banner = page(1584, 396, f"""
-<div class="fig" style="left:26px;width:640px;border-left:0;border-right:1px solid #121211"><canvas id="tunnel"></canvas></div>
-<div style="position:absolute;right:86px;top:74px;text-align:right">
-<div class="h" style="font-size:76px">Find the drag.<br><em>Add the lift.</em></div>
-<div class="m" style="margin-top:26px;font-size:16px">AI &amp; software studio · Process audits · Automation · Product</div></div>""")
+<div class="panel" style="left:0;width:560px">{sized(mark, 220)}</div>
+<div style="position:absolute;right:96px;top:84px;text-align:right">
+<div class="h" style="font-size:78px">Find the drag.<br><span>Add the lift.</span></div>
+<div class="s" style="margin-top:22px;font-size:22px">AI &amp; software studio · Process audits · Automation · Product</div></div>""")
 
-avatar = f"""<html><body style="margin:0;width:800px;height:800px;display:grid;place-items:center;background:#121211">
+avatar = f"""<html><body style="margin:0;width:800px;height:800px;display:grid;place-items:center;background:#0B1020">
 <div style="margin-top:10px">{sized(mark, 400)}</div></body></html>"""
 
 jobs = [
@@ -62,8 +59,8 @@ jobs = [
     dict(src=f"{B}/updraft-logo-stacked-light-bg.svg", w=1000, h=740, iw=900, ih=700, out=f"{B}/updraft-logo-stacked-light-bg.png", transparent=True),
     dict(src=f"{B}/updraft-mark-dark-bg.svg", w=680, h=1040, out=f"{B}/updraft-mark-dark-bg.png", transparent=True),
     dict(src=f"{B}/updraft-mark-light-bg.svg", w=680, h=1040, out=f"{B}/updraft-mark-light-bg.png", transparent=True),
-    dict(html=og, w=1200, h=630, out=f"{A}/og.png", wait=3200),
-    dict(html=banner, w=1584, h=396, out=f"{B}/updraft-linkedin-banner.png", wait=3200),
+    dict(html=og, w=1200, h=630, out=f"{A}/og.png", wait=1500),
+    dict(html=banner, w=1584, h=396, out=f"{B}/updraft-linkedin-banner.png", wait=1500),
     dict(html=avatar, w=800, h=800, out=f"{B}/updraft-social-avatar.png"),
 ]
 jp = os.path.join(HERE, ".jobs.json")
@@ -80,9 +77,4 @@ with zipfile.ZipFile(kit, "w", zipfile.ZIP_DEFLATED) as z:
         if f.endswith((".svg", ".png")) and f != "favicon-48.png":
             z.write(os.path.join(B, f), f)
     z.write(os.path.join(A, "og.png"), "og.png")
-    for f in sorted(os.listdir(os.path.join(B, "world"))):
-        z.write(os.path.join(B, "world", f), "world/" + f)
-    for f in ("updraft-labs-brand-film.mp4", "updraft-labs-brand-film-poster.jpg"):
-        if os.path.exists(os.path.join(B, f)):
-            z.write(os.path.join(B, f), f)
 print("rendered", len(jobs), "images; kit:", kit)
