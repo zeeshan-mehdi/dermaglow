@@ -10,7 +10,7 @@ from brand import mark_paths, text_path, text_width, arc_text, cap_height, SLOPE
 
 OUT = sys.argv[1]
 os.makedirs(OUT, exist_ok=True)
-INK, PAPER, PAPER2, PAPER3 = "#121211", "#F2F0E9", "#E8E5DB", "#DDD9CC"
+INK, PAPER, PAPER2, PAPER3 = "#121211", "#F4F4F1", "#EAEAE6", "#DEDED9"
 BLUE, MINT, TEAL, ORANGE = "#2443D6", "#86F5CF", "#0E9F79", "#FF5A1F"
 ANGLE = math.degrees(math.atan(abs(SLOPE)))  # 21.8°, the logo's rising line
 

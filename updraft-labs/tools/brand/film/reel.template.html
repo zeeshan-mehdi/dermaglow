@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100vw;height:100vh;overflow:hidden;background:#F2F0E9;color:#121211;font-family:Geist}
+html,body{width:100vw;height:100vh;overflow:hidden;background:#F4F4F1;color:#121211;font-family:Geist}
 .scene{position:absolute;inset:0;display:none;overflow:hidden}
 .scene.on{display:block}
 .scene.center.on{display:grid;place-items:center}
@@ -13,7 +13,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:#F2F0E9;color:#121
 .frame{position:absolute;inset:0 3.2vh;border-left:2px solid #121211;border-right:2px solid #121211;pointer-events:none;z-index:9}
 .hud{position:absolute;z-index:10;font-family:'Geist Mono';font-size:1.45vh;letter-spacing:.12em;text-transform:uppercase}
 .shot{position:absolute;inset:0;background-size:cover;background-position:center}
-.tag{position:absolute;font-family:'Geist Mono';font-size:1.6vh;letter-spacing:.1em;text-transform:uppercase;background:#F2F0E9;padding:.6vh 1vh;box-shadow:inset 0 0 0 2px #121211}
+.tag{position:absolute;font-family:'Geist Mono';font-size:1.6vh;letter-spacing:.1em;text-transform:uppercase;background:#F4F4F1;padding:.6vh 1vh;box-shadow:inset 0 0 0 2px #121211}
 </style></head><body>
 <div class="frame"></div>
 <div class="hud" style="left:5.5vh;top:3vh">Updraft Labs — Brand film 01</div>
@@ -26,13 +26,13 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:#F2F0E9;color:#121
   <div id="dash" style="position:absolute;left:9vh;right:9vh;bottom:16vh;height:0;border-top:.9vh dashed #121211"></div></section>
 <section class="scene" id="s3" style="background:#86F5CF"><div class="h" id="lift-txt" style="position:absolute;left:9vh;top:30vh;font-size:21vh;color:#2443D6">Add the<br>lift.</div>
   <div style="position:absolute;left:9vh;right:9vh;bottom:16vh;height:1.2vh;background:#2443D6"></div></section>
-<section class="scene" id="s4" style="background:#E8E5DB"><canvas id="cv" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+<section class="scene" id="s4" style="background:#EAEAE6"><canvas id="cv" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
   <span class="tag" style="left:6vh;top:8vh">Fig. 01 — The lift</span><span class="tag" style="right:6vh;bottom:8vh">Drag → Lift +16</span></section>
 <section class="scene" id="s5"><div class="shot" id="hero" style="background-image:url('file://{{SHOTS}}/hero.png')"></div></section>
 <section class="scene" id="s6"><div class="shot" id="tix" style="background-image:url('file://{{SHOTS}}/tickets.png')"></div></section>
 <section class="scene" id="s7"><img id="patch" src="file://{{WORLD}}/updraft-patch.svg" style="position:absolute;height:64vh;left:22%;top:18vh">
   <img id="wings" src="file://{{WORLD}}/updraft-wings.svg" style="position:absolute;height:30vh;right:9%;top:35vh"></section>
-<section class="scene" id="s8" style="background:#E8E5DB"><img id="tagimg" src="file://{{WORLD}}/updraft-bag-tag.svg" style="position:absolute;height:74vh;left:12%;top:13vh">
+<section class="scene" id="s8" style="background:#EAEAE6"><img id="tagimg" src="file://{{WORLD}}/updraft-bag-tag.svg" style="position:absolute;height:74vh;left:12%;top:13vh">
   <img id="plate" src="file://{{WORLD}}/updraft-data-plate.svg" style="position:absolute;height:34vh;left:33%;top:14vh">
   <img id="sticker" src="file://{{WORLD}}/updraft-this-side-up.svg" style="position:absolute;height:26vh;left:52%;top:56vh"></section>
 <section class="scene center" id="s9"><div style="display:grid;justify-items:center;gap:4vh">{{LOGO_END}}

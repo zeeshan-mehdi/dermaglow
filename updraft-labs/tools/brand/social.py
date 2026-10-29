@@ -22,11 +22,11 @@ mark, logo = read("updraft-mark-dark-bg.svg"), read("updraft-logo-light-bg.svg")
 MAINJS = open(os.path.join(PUB, "main.js")).read()
 FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800'
          '&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap">')
-CSS = ("<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#F2F0E9;color:#121211;font-family:Geist;position:relative;overflow:hidden}"
+CSS = ("<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#F4F4F1;color:#121211;font-family:Geist;position:relative;overflow:hidden}"
        ".h{font-family:'Bricolage Grotesque';font-weight:760;font-variation-settings:'opsz' 96,'wdth' 92;letter-spacing:-0.025em;line-height:.92}"
        ".h em{font-style:normal;color:#2443D6}.m{font-family:'Geist Mono';text-transform:uppercase;letter-spacing:.08em}"
-       ".fig{position:absolute;top:0;bottom:0;background:#E8E5DB;border-left:1px solid #121211}.fig canvas{width:100%;height:100%;display:block}"
-       ".tag{position:absolute;font-family:'Geist Mono';font-size:15px;letter-spacing:.08em;text-transform:uppercase;background:#F2F0E9;padding:6px 10px;box-shadow:inset 0 0 0 1.5px #121211}"
+       ".fig{position:absolute;top:0;bottom:0;background:#EAEAE6;border-left:1px solid #121211}.fig canvas{width:100%;height:100%;display:block}"
+       ".tag{position:absolute;font-family:'Geist Mono';font-size:15px;letter-spacing:.08em;text-transform:uppercase;background:#F4F4F1;padding:6px 10px;box-shadow:inset 0 0 0 1.5px #121211}"
        ".frame{position:absolute;inset:0 26px;border-left:1.5px solid #121211;border-right:1.5px solid #121211;pointer-events:none}</style>")
 
 
