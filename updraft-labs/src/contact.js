@@ -1,9 +1,9 @@
 // POST /api/contact — emails a contact-form submission via Resend.
 //
-// Needs the RESEND_API_KEY secret (Pages project → Settings → Variables and
-// Secrets) and a sending domain verified in Resend. CONTACT_TO / CONTACT_FROM
-// come from wrangler.toml. Without the key it answers 503 and the page falls
-// back to opening the visitor's email app.
+// Needs the RESEND_API_KEY secret (Worker → Settings → Variables and Secrets)
+// and a sending domain verified in Resend. CONTACT_TO / CONTACT_FROM come from
+// wrangler.jsonc. Without the key it answers 503 and the page falls back to
+// opening the visitor's email app.
 
 const LIMITS = { name: 120, email: 200, company: 160, message: 5000 };
 
@@ -12,7 +12,7 @@ const json = (body, status = 200) =>
 
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
-export async function onRequestPost({ request, env }) {
+export async function handleContact(request, env) {
   if (!env.RESEND_API_KEY) return json({ ok: false, error: "not_configured" }, 503);
 
   let d;

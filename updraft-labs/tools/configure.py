@@ -133,11 +133,17 @@ urls = "".join(f"  <url><loc>{base}{path}</loc><lastmod>{today}</lastmod></url>\
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + "</urlset>\n"
 )
 
-# wrangler.jsonc — Pages project config; vars are read by functions/api/contact.js
+# wrangler.jsonc: a Worker serving public/ as static assets; vars are read by src/contact.js
 wr = {
-    "name": "updraft",  # the Cloudflare Pages project name
-    "pages_build_output_dir": "public",
+    "name": "updraft",  # the Worker's name in Cloudflare
+    "main": "src/worker.js",
     "compatibility_date": "2026-09-01",
+    "assets": {
+        "directory": "public",
+        "binding": "ASSETS",
+        "not_found_handling": "404-page",
+        "run_worker_first": ["/api/*"],
+    },
     "vars": {
         "CONTACT_TO": form.get("to_email") or email,
         "CONTACT_FROM": form.get("from_email") or f"website@{domain}",

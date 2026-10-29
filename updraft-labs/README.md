@@ -1,6 +1,6 @@
 # Updraft Labs — website
 
-Static site + one Cloudflare Pages Function (the contact form). No build step.
+Static site served by a Cloudflare Worker (static assets), plus one small route for the contact form. No build step.
 
 Design system ("flight lab"): near-neutral paper and ink, flat colour (blue = drag, mint = lift, windsock orange = anything you can press), Bricolage Grotesque headlines, Geist body, Geist Mono labels, and the Fig. 01 wind-tunnel figure built from the logo's slice. Full guide at `/brand/`.
 
@@ -13,11 +13,11 @@ public/                 everything visitors see (Cloudflare serves only this fol
   robots.txt, sitemap.xml   generated — don't edit by hand
   brand/                logo system (SVG + PNG), app icon, favicon, social images, brand page, kit zip
   assets/               social-share image, apple-touch icon, project screenshots
-functions/api/contact.js    POST /api/contact → emails the form to you (via Resend)
+src/worker.js, contact.js  the Worker: serves public/, and POST /api/contact emails the form (via Resend)
 site.config.json        domain, email, booking link, location, socials  ← edit this
 tools/configure.py      applies site.config.json everywhere
 tools/brand/            code that generates the logo files (see its README)
-wrangler.jsonc          generated Pages config
+wrangler.jsonc          generated Worker config
 ```
 
 ## Launch checklist
@@ -36,13 +36,13 @@ social icons, `robots.txt`, `sitemap.xml` and `wrangler.jsonc`. Safe to re-run.
 | `social.*` | full profile URLs | empty ones are hidden |
 | `contact_form.to_email` | | optional — inbox for form messages (defaults to `email`) |
 
-**2. Create the Cloudflare Pages project.**
-Workers & Pages → Create → Pages → Connect to Git → pick the repo.
-Framework preset: **None** · Build command: *(empty)* · Build output directory: **`public`** ·
-Root directory: **`updraft-labs`** (or empty once this lives in its own repo).
-CLI alternative, from this folder: `npx wrangler pages deploy`.
+**2. Create the Cloudflare Worker.** (Live now as the `updraft` Worker.)
+Workers & Pages → Create → Import a repository → pick the repo. Root directory:
+**`updraft-labs`** (or empty once this lives in its own repo); deploy command: `npx wrangler deploy`
+(the default); build command: empty. Then Settings → Build → Git branch → the branch to deploy.
+CLI alternative, from this folder: `npx wrangler deploy`.
 
-**3. Connect the domain.** Pages project → Custom domains → add `yourdomain` and
+**3. Connect the domain.** Worker → Settings → Domains & Routes → Add → Custom domain → add `yourdomain` and
 `www.yourdomain`. If the domain is registered at Cloudflare, DNS is set automatically.
 Redirect `www` → apex with Rules → Redirect Rules (or Bulk Redirects).
 
@@ -50,7 +50,7 @@ Redirect `www` → apex with Rules → Redirect Rules (or Bulk Redirects).
 - Inbox: Cloudflare Email Routing (free) can forward `hello@yourdomain` to Gmail.
 - Contact form: create a free [Resend](https://resend.com) account, verify the domain
   (it gives you DNS records to add in Cloudflare), create an API key, and add it as
-  the **`RESEND_API_KEY`** secret: Pages project → Settings → Variables and Secrets.
+  the **`RESEND_API_KEY`** secret: Worker → Settings → Variables and Secrets.
   Until then the form still works — it opens the visitor's email app instead.
 
 **5. After launch.** Submit `https://yourdomain/sitemap.xml` in Google Search Console
@@ -67,5 +67,5 @@ and Bing Webmaster Tools. Test the share card at opengraph.xyz.
 
 ## Local preview
 
-`npx wrangler pages dev` (includes the contact function) or
+`npx wrangler dev` (includes the contact route) or
 `python3 -m http.server 8787 -d public`.
