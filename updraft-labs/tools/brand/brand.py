@@ -11,6 +11,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FONTS = {
     "geist": os.path.join(HERE, "fonts", "Geist[wght].ttf"),
     "serif-italic": os.path.join(HERE, "fonts", "InstrumentSerif-Italic.ttf"),
+    "mono": os.path.join(HERE, "fonts", "GeistMono[wght].ttf"),
+    "display": os.path.join(HERE, "fonts", "BricolageGrotesque[opsz,wdth,wght].ttf"),
 }
 
 # ---------------------------------------------------------------- the mark
@@ -60,29 +62,39 @@ def mark_paths(gap=GAP, lift=LIFT, y0=Y0, slope=SLOPE, cut_deg=None, R=R, r=r):
 
 
 # ---------------------------------------------------------------- type
+# Bricolage is set the way the site sets headlines.
+DISPLAY_AXES = (("opsz", 96), ("wdth", 92))
+
+
 @functools.lru_cache(None)
-def _font(key, wght):
+def _font(key, wght, axes=()):
     path = FONTS[key]
+    loc = {"wght": wght, **dict(axes)}
     tt = TTFont(path)
     if "fvar" in tt:
-        tt = instancer.instantiateVariableFont(tt, {"wght": wght})
-    blob = hb.Blob.from_file_path(path)
-    face = hb.Face(blob)
-    font = hb.Font(face)
+        tags = {a.axisTag for a in tt["fvar"].axes}
+        loc = {k: v for k, v in loc.items() if k in tags}
+        tt = instancer.instantiateVariableFont(tt, loc)
+    font = hb.Font(hb.Face(hb.Blob.from_file_path(path)))
     if "fvar" in TTFont(path):
-        font.set_variations({"wght": wght})
+        font.set_variations(loc)
     return tt, font
 
 
-def text_path(key, text, size, wght=400, tracking=0.0, x=0.0, baseline=0.0):
-    """Return (svg path d, advance width, (xmin, ymin, xmax, ymax)) for text set
-    at `size` px with harfbuzz shaping (kerning) and `tracking` in em."""
-    tt, font = _font(key, wght)
-    upem = tt["head"].unitsPerEm
+def _shape(key, text, wght, axes):
+    tt, font = _font(key, wght, tuple(axes) if axes else (DISPLAY_AXES if key == "display" else ()))
     buf = hb.Buffer()
     buf.add_str(text)
     buf.guess_segment_properties()
     hb.shape(font, buf, {"kern": True, "liga": True})
+    return tt, buf
+
+
+def text_path(key, text, size, wght=400, tracking=0.0, x=0.0, baseline=0.0, axes=None):
+    """Return (svg path d, advance width, (xmin, ymin, xmax, ymax)) for text set
+    at `size` px with harfbuzz shaping (kerning) and `tracking` in em."""
+    tt, buf = _shape(key, text, wght, axes)
+    upem = tt["head"].unitsPerEm
     gs = tt.getGlyphSet()
     order = tt.getGlyphOrder()
     s = size / upem
@@ -101,7 +113,37 @@ def text_path(key, text, size, wght=400, tracking=0.0, x=0.0, baseline=0.0):
     return pen.getCommands(), adv, bpen.bounds
 
 
+def text_width(key, text, size, wght=400, tracking=0.0, axes=None):
+    return text_path(key, text, size, wght, tracking, axes=axes)[1]
+
+
+def arc_text(key, text, size, cx, cy, r, center_deg=-90, wght=400, tracking=0.0, bottom=False, axes=None):
+    """Set text along a circle of radius r (baseline on the circle), centred on
+    `center_deg` (screen angles: -90 is the top). Top text reads clockwise with
+    glyphs upright outward; bottom text reads left to right along the bottom."""
+    tt, buf = _shape(key, text, wght, axes)
+    upem = tt["head"].unitsPerEm
+    gs, order, s = tt.getGlyphSet(), tt.getGlyphOrder(), size / upem
+    advs = [(order[i.codepoint], p.x_advance * s + tracking * size) for i, p in zip(buf.glyph_infos, buf.glyph_positions)]
+    total = sum(a for _, a in advs) - tracking * size
+    span = total / r                     # radians
+    pen = SVGPathPen(gs)
+    a = math.radians(center_deg) + (span / 2 if bottom else -span / 2)
+    for name, adv in advs:
+        mid = a + (-1 if bottom else 1) * (adv / 2) / r
+        x, y = cx + r * math.cos(mid), cy + r * math.sin(mid)
+        rot = mid + (-math.pi / 2 if bottom else math.pi / 2)
+        c, si = math.cos(rot), math.sin(rot)
+        # glyph origin shifted back by half its advance so it's centred on `mid`
+        hx = -adv / 2
+        # map font units -> local (scale, flip y) -> rotate -> translate
+        t = (s * c, s * si, s * si, -s * c, x + hx * c, y + hx * si)
+        gs[name].draw(TransformPen(pen, t))
+        a += (-1 if bottom else 1) * adv / r
+    return pen.getCommands()
+
+
 def cap_height(key, wght=400):
-    tt, _ = _font(key, wght)
+    tt, _ = _font(key, wght, DISPLAY_AXES if key == "display" else ())
     os2 = tt["OS/2"]
     return getattr(os2, "sCapHeight", 700) / tt["head"].unitsPerEm

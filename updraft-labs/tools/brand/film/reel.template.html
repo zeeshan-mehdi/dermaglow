@@ -1,0 +1,86 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100vw;height:100vh;overflow:hidden;background:#F2F0E9;color:#121211;font-family:Geist}
+.scene{position:absolute;inset:0;display:none;overflow:hidden}
+.scene.on{display:block}
+.scene.center.on{display:grid;place-items:center}
+.h{font-family:'Bricolage Grotesque';font-weight:760;font-variation-settings:'opsz' 96,'wdth' 92;letter-spacing:-0.025em;line-height:.9}
+.m{font-family:'Geist Mono';text-transform:uppercase;letter-spacing:.1em}
+.lockup{height:13vh;width:auto}
+#logo1 .lockup{height:17vh}
+.frame{position:absolute;inset:0 3.2vh;border-left:2px solid #121211;border-right:2px solid #121211;pointer-events:none;z-index:9}
+.hud{position:absolute;z-index:10;font-family:'Geist Mono';font-size:1.45vh;letter-spacing:.12em;text-transform:uppercase}
+.shot{position:absolute;inset:0;background-size:cover;background-position:center}
+.tag{position:absolute;font-family:'Geist Mono';font-size:1.6vh;letter-spacing:.1em;text-transform:uppercase;background:#F2F0E9;padding:.6vh 1vh;box-shadow:inset 0 0 0 2px #121211}
+</style></head><body>
+<div class="frame"></div>
+<div class="hud" style="left:5.5vh;top:3vh">Updraft Labs — Brand film 01</div>
+<div class="hud" id="tc" style="right:5.5vh;top:3vh">00:00:00</div>
+<div class="hud" id="sheet" style="left:5.5vh;bottom:3vh">Sheet 01 / 09</div>
+<div class="hud" style="right:5.5vh;bottom:3vh">Find the drag · Add the lift</div>
+
+<section class="scene center" id="s1"><div id="logo1">{{LOGO}}</div></section>
+<section class="scene" id="s2"><div class="h" style="position:absolute;left:9vh;top:30vh;font-size:21vh">Find the<br>drag.</div>
+  <div id="dash" style="position:absolute;left:9vh;right:9vh;bottom:16vh;height:0;border-top:.9vh dashed #121211"></div></section>
+<section class="scene" id="s3" style="background:#86F5CF"><div class="h" id="lift-txt" style="position:absolute;left:9vh;top:30vh;font-size:21vh;color:#2443D6">Add the<br>lift.</div>
+  <div style="position:absolute;left:9vh;right:9vh;bottom:16vh;height:1.2vh;background:#2443D6"></div></section>
+<section class="scene" id="s4" style="background:#E8E5DB"><canvas id="cv" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+  <span class="tag" style="left:6vh;top:8vh">Fig. 01 — The lift</span><span class="tag" style="right:6vh;bottom:8vh">Drag → Lift +16</span></section>
+<section class="scene" id="s5"><div class="shot" id="hero" style="background-image:url('file://{{SHOTS}}/hero.png')"></div></section>
+<section class="scene" id="s6"><div class="shot" id="tix" style="background-image:url('file://{{SHOTS}}/tickets.png')"></div></section>
+<section class="scene" id="s7"><img id="patch" src="file://{{WORLD}}/updraft-patch.svg" style="position:absolute;height:64vh;left:22%;top:18vh">
+  <img id="wings" src="file://{{WORLD}}/updraft-wings.svg" style="position:absolute;height:30vh;right:9%;top:35vh"></section>
+<section class="scene" id="s8" style="background:#E8E5DB"><img id="tagimg" src="file://{{WORLD}}/updraft-bag-tag.svg" style="position:absolute;height:74vh;left:12%;top:13vh">
+  <img id="plate" src="file://{{WORLD}}/updraft-data-plate.svg" style="position:absolute;height:34vh;left:33%;top:14vh">
+  <img id="sticker" src="file://{{WORLD}}/updraft-this-side-up.svg" style="position:absolute;height:26vh;left:52%;top:56vh"></section>
+<section class="scene center" id="s9"><div style="display:grid;justify-items:center;gap:4vh">{{LOGO_END}}
+
+  <div class="m" style="font-size:2.4vh">updraftlabs.ai</div>
+  <div class="m" style="font-size:1.8vh;display:flex;align-items:center;gap:1.2vh"><span style="width:1.2vh;height:1.2vh;border-radius:50%;background:#0E9F79;display:inline-block"></span>Taking new partners</div></div></section>
+<script>
+const SCENES = [['s1',0,1.6],['s2',1.6,2.8],['s3',2.8,4.0],['s4',4.0,6.2],['s5',6.2,7.4],['s6',7.4,8.6],['s7',8.6,9.8],['s8',9.8,10.8],['s9',10.8,12.4]];
+const E = t => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 4);
+const lock = document.querySelector('#logo1 svg');
+const g = lock.querySelector('g'); const rp = g.querySelectorAll('path')[1];
+const was = rp.cloneNode(); was.setAttribute('fill', 'url(#uL)'); g.appendChild(was);
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+function sizeCanvas() { const d = 2; cv.width = innerWidth * d; cv.height = innerHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0); }
+sizeCanvas();
+function tunnel(t, liftK, mx, my) {
+  const Wd = innerWidth, Hd = innerHeight, TAN = 0.4;
+  ctx.clearRect(0, 0, Wd, Hd);
+  ctx.strokeStyle = 'rgba(18,18,17,.07)'; ctx.lineWidth = 1;
+  for (let k = -Hd; k < Wd + Hd; k += 60) { ctx.beginPath(); ctx.moveTo(k, Hd); ctx.lineTo(k + Hd / TAN, 0); ctx.stroke(); }
+  const n = 26, top = Hd * .16, bot = Hd * .86, gap = (bot - top) / (n - 1), cx = Wd * .46, cy = (top + bot) / 2;
+  const lift = gap * 3.2 * liftK, cols = ['#0E9F79','#13B48A','#2BC9A0','#2443D6','#3B5BE0','#1A34B0'];
+  for (let i = 0; i < n; i++) {
+    const y = top + i * gap, xs = cx + (y - cy) * TAN, major = i % 4 === 0, w = major ? 3.4 : 1.8;
+    ctx.strokeStyle = '#121211'; ctx.lineWidth = w; ctx.setLineDash(major ? [] : [30 + (i % 3) * 8, 8]); ctx.lineDashOffset = -t * (60 + (i % 3) * 14);
+    ctx.beginPath(); ctx.moveTo(-10, y); ctx.lineTo(xs - 6, y); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = i === Math.round(n * .6) ? '#FF5A1F' : cols[Math.min(5, Math.floor(i / n * 6))]; ctx.lineWidth = w + 1.6;
+    ctx.beginPath();
+    for (let px = xs + 6; px <= Wd + 12; px += 6) { const yl = y - lift, dx = px - mx, dy = yl - my; const th = Math.exp(-(dx*dx + dy*dy) / (2 * 120 * 120)) * 48; px === xs + 6 ? ctx.moveTo(px, yl - th) : ctx.lineTo(px, yl - th); }
+    ctx.stroke();
+  }
+  ctx.strokeStyle = '#FF5A1F'; ctx.lineWidth = 2; ctx.setLineDash([9, 7]);
+  ctx.beginPath(); ctx.moveTo(cx + (top - 60 - cy) * TAN, top - 60); ctx.lineTo(cx + (bot + 60 - cy) * TAN, bot + 60); ctx.stroke(); ctx.setLineDash([]);
+}
+window.render = function (t) {
+  let idx = SCENES.findIndex(([, a, b]) => t >= a && t < b); if (idx < 0) idx = SCENES.length - 1;
+  SCENES.forEach(([id], i) => document.getElementById(id).classList.toggle('on', i === idx));
+  const [id, a, b] = SCENES[idx], p = t - a;
+  document.getElementById('sheet').textContent = 'Sheet ' + String(idx + 1).padStart(2, '0') + ' / 09';
+  const fr = Math.round(t * 30); document.getElementById('tc').textContent = '00:' + String(Math.floor(t)).padStart(2, '0') + ':' + String(fr % 30).padStart(2, '0');
+  if (id === 's1') { const e = E((p - .35) / .9); rp.setAttribute('transform', `translate(0 ${16 * (1 - e)})`); was.setAttribute('transform', `translate(0 ${16 * (1 - e)})`); was.style.opacity = 1 - E((p - .45) / .8); }
+  if (id === 's2') document.getElementById('dash').style.borderTopWidth = '.9vh', document.getElementById('dash').style.transform = `translateX(${-p * 40}px)`;
+  if (id === 's3') document.getElementById('lift-txt').style.transform = `translateY(${(1 - E(p / .7)) * 6}vh)`;
+  if (id === 's4') { const mx = innerWidth * (.55 + .3 * E((p - .9) / 1.2)), my = innerHeight * (.62 - .25 * E((p - .9) / 1.2)); tunnel(t, E((p - .2) / 1.3), p > .9 ? mx : -1e4, my); }
+  if (id === 's5') document.getElementById('hero').style.transform = `scale(${1 + p * .03})`;
+  if (id === 's6') document.getElementById('tix').style.transform = `translateY(${-p * 18}px) scale(1.02)`;
+  if (id === 's7') { document.getElementById('patch').style.transform = `rotate(${(1 - E(p / .8)) * -14}deg)`; document.getElementById('wings').style.transform = `translateY(${(1 - E((p - .1) / .8)) * 40}px)`; }
+  if (id === 's8') { document.getElementById('tagimg').style.transform = `rotate(${-4 + E(p / .8) * 3}deg)`; document.getElementById('sticker').style.transform = `translateY(${(1 - E((p - .15) / .7)) * 30}px) rotate(3deg)`; }
+};
+window.ready = document.fonts.ready.then(() => Promise.all([...document.images].map(i => i.complete ? 1 : new Promise(r => i.onload = r))));
+</script></body></html>

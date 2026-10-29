@@ -80,4 +80,9 @@ with zipfile.ZipFile(kit, "w", zipfile.ZIP_DEFLATED) as z:
         if f.endswith((".svg", ".png")) and f != "favicon-48.png":
             z.write(os.path.join(B, f), f)
     z.write(os.path.join(A, "og.png"), "og.png")
+    for f in sorted(os.listdir(os.path.join(B, "world"))):
+        z.write(os.path.join(B, "world", f), "world/" + f)
+    for f in ("updraft-labs-brand-film.mp4", "updraft-labs-brand-film-poster.jpg"):
+        if os.path.exists(os.path.join(B, f)):
+            z.write(os.path.join(B, f), f)
 print("rendered", len(jobs), "images; kit:", kit)
