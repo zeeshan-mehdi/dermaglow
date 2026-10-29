@@ -305,6 +305,46 @@ h3 { font-size: 1.2rem; letter-spacing: -0.015em; line-height: 1.3; }
 .lost p { margin: 16px auto 0; max-width: 440px; font-size: 1.1rem; }
 .lost .hero-cta { justify-content: center; }
 
+/* outcomes strip */
+.outcomes { padding: 8px 0 88px; }
+.outcomes-title { font-size: .9rem; font-weight: 500; color: var(--muted); margin-bottom: 20px; }
+.outcome-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border-radius: var(--r); overflow: hidden; box-shadow: 0 0 0 1px var(--line); }
+.outcome { display: flex; gap: 16px; padding: 24px; background: #fff; }
+.o-icon { flex: none; width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: var(--blue-soft); }
+.o-icon svg { width: 19px; height: 19px; fill: none; stroke: var(--blue); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.outcome h3 { font-size: 1.02rem; margin-bottom: 4px; }
+.outcome p { font-size: .92rem; }
+
+/* bottleneck review */
+.review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.rv-steps { counter-reset: rv; margin-top: 28px; display: grid; gap: 14px; }
+.rv-steps li { counter-increment: rv; display: flex; gap: 14px; font-size: 1rem; }
+.rv-steps li::before { content: counter(rv); flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--blue-soft); color: var(--blue); font-weight: 600; font-size: .86rem; }
+.rv-steps b { color: var(--ink); font-weight: 600; }
+.report { background: #fff; border-radius: 20px; padding: 28px; box-shadow: inset 0 0 0 1px var(--line), 0 30px 60px -30px rgba(11, 16, 32, .25); }
+.rp-head { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.rp-head small, .rp-label, .rp-fix small { display: block; font-size: .76rem; font-weight: 500; color: var(--muted); }
+.rp-head b { color: var(--ink); font-weight: 600; }
+.rp-head span { font-size: .76rem; color: var(--muted); background: var(--bg-2); padding: 4px 10px; border-radius: 999px; }
+.rp-score { display: flex; align-items: center; gap: 18px; padding: 20px 0; }
+.gauge { flex: none; width: 84px; height: 84px; border-radius: 50%; display: grid; place-content: center; text-align: center; background: radial-gradient(closest-side, #fff 76%, transparent 78%), conic-gradient(var(--amber) calc(var(--v) * 1%), var(--bg-3) 0); }
+.gauge b { font-size: 1.6rem; font-weight: 600; color: var(--ink); line-height: 1; }
+.gauge small { font-size: .7rem; color: var(--muted); }
+.rp-score b { color: var(--ink); font-weight: 600; }
+.rp-score p { font-size: .92rem; }
+.rp-list { display: grid; gap: 10px; margin: 10px 0 18px; }
+.rp-list li { position: relative; display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 12px; background: var(--bg-2); overflow: hidden; }
+.rp-list li > i { position: absolute; left: 0; bottom: 0; height: 3px; width: var(--w); background: var(--amber); }
+.rp-list span { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: #fff; font-size: .8rem; font-weight: 600; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-2); }
+.rp-list b { display: block; font-size: .94rem; font-weight: 600; color: var(--ink); }
+.rp-list small { font-size: .8rem; font-weight: 500; color: var(--amber); }
+.rp-fix { padding: 16px; border-radius: 12px; background: var(--navy); color: #9AA3B8; }
+.rp-fix small { color: #86F5CF; }
+.rp-fix b { display: block; color: #fff; font-weight: 600; margin: 2px 0 4px; }
+.rp-fix p { font-size: .86rem; }
+@media (max-width: 1060px) { .review-grid { grid-template-columns: 1fr; gap: 48px; } .outcome-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 720px) { .outcome-grid { grid-template-columns: 1fr; } .outcomes { padding-bottom: 64px; } .report { padding: 20px; } }
+
 /* reveal */
 .js .reveal { opacity: 0; transform: translateY(16px); transition: opacity .8s var(--ease), transform .8s var(--ease); transition-delay: var(--d, 0s); }
 .js .reveal.in { opacity: 1; transform: none; }
