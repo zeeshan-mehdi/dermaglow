@@ -111,8 +111,9 @@ for mode in ("dark", "light"):
         W, H, body = horizontal(p, serif=serif)
         tag = "-expressive" if serif else ""
         write(f"updraft-logo{tag}-{mode}-bg.svg", svg(W, H, body, grads(p) + tgrad(p)))
-W, H, body = horizontal(PALETTES["dark"], animate=True)
-write("updraft-logo-dark-bg-animated.svg", svg(W, H, body, grads(PALETTES["dark"]) + tgrad(PALETTES["dark"]) + ANIM))
+for mode in ("dark", "light"):
+    W, H, body = horizontal(PALETTES[mode], animate=True)
+    write(f"updraft-logo-{mode}-bg-animated.svg", svg(W, H, body, grads(PALETTES[mode]) + tgrad(PALETTES[mode]) + ANIM))
 for col, nm in (("#FFFFFF", "white"), (INK, "black")):
     W, H, body = horizontal(PALETTES["dark"], solid=col)
     write(f"updraft-logo-{nm}.svg", svg(W, H, body))
@@ -144,17 +145,9 @@ def app_icon(size=1024, radius=0.225):
     mw = MW * mh / MH
     x = (size - mw) / 2 - size * 0.005
     y = (size - mh) / 2 + size * 0.012
-    defs = grads(p) + (
-        f'<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#101833"/>'
-        f'<stop offset="1" stop-color="#05070D"/></linearGradient>'
-        f'<radialGradient id="glow" cx="0.62" cy="0.36" r="0.55"><stop offset="0" stop-color="#7DD3FC" stop-opacity=".28"/>'
-        f'<stop offset="1" stop-color="#7DD3FC" stop-opacity="0"/></radialGradient>'
-        f'<linearGradient id="rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".16"/>'
-        f'<stop offset=".4" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>')
-    body = (f'<rect width="{size}" height="{size}" rx="{rr}" fill="url(#bg)"/>'
-            f'<rect width="{size}" height="{size}" rx="{rr}" fill="url(#glow)"/>'
-            f'<rect x="1.5" y="1.5" width="{size-3}" height="{size-3}" rx="{rr-1.5}" fill="none" stroke="url(#rim)" stroke-width="3"/>'
-            + mark_group(x, y, mh))
+    defs = grads(p)
+    # flat ink tile, like the site: no glow, no gradient behind the mark
+    body = f'<rect width="{size}" height="{size}" rx="{rr}" fill="#121211"/>' + mark_group(x, y, mh)
     return svg(size, size, body, defs, "Updraft Labs")
 
 

@@ -2,6 +2,8 @@
 
 Static site + one Cloudflare Pages Function (the contact form). No build step.
 
+Design system ("flight lab"): warm paper and ink, flat colour (blue = drag, mint = lift, windsock orange = anything you can press), Bricolage Grotesque headlines, Geist body, Geist Mono labels, and the Fig. 01 wind-tunnel figure built from the logo's slice. Full guide at `/brand/`.
+
 ```
 public/                 everything visitors see (Cloudflare serves only this folder)
   index.html            the whole site, one page

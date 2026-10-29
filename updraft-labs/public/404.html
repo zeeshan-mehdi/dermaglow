@@ -4,21 +4,44 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lost altitude — Updraft Labs</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#F2F0E9">
   <link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/brand/favicon-32.png" type="image/png" sizes="32x32">
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="/styles.css">
+  <script src="/main.js" defer></script>
 </head>
 <body>
-  <main class="hero" style="text-align:center">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="wrap hero-inner">
-      <p class="eyebrow">404</p>
-      <h1>Lost <em>altitude.</em></h1>
-      <p class="hero-sub">This page drifted off. Let's get you back on course.</p>
-      <div class="hero-cta"><a class="btn" href="/">Back to Updraft Labs <span aria-hidden="true">→</span></a></div>
+  <div class="sheet">
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="/" class="brand" aria-label="Updraft Labs home"><img src="/brand/updraft-logo-light-bg.svg" alt="Updraft Labs" width="132" height="26"></a>
+      <nav class="nav-links" aria-label="Primary"><a href="/#services">Services</a><a href="/#process">Flight plan</a><a href="/#work">Work</a><a href="/#team">Team</a><a href="/#faq">FAQ</a></nav>
+      <a href="/#contact" class="nav-cta keep">Book a call <span aria-hidden="true">↗</span></a>
     </div>
+  </header>
+  <main class="lost">
+    <div class="lost-copy">
+      <span class="mono">Error 404 / Route not found</span>
+      <h1>Lost <em>altitude.</em></h1>
+      <p class="hero-sub">This page has drifted off course, or never existed. Let's get you back on the flight plan.</p>
+      <div class="hero-cta"><a class="btn" href="/">Back to base <span aria-hidden="true">↗</span></a><a class="btn btn-ghost" href="/#contact">Contact us</a></div>
+    </div>
+    <figure class="fig"><canvas data-tunnel="lost" aria-hidden="true"></canvas>
+      <span class="tag" style="left:16px;top:16px">Fig. 404 — Stall</span>
+      <span class="tag" style="right:16px;bottom:16px">Lift −16 · Rerouting</span>
+    </figure>
   </main>
+  <footer class="footer">
+    <div class="title-block">
+      <span>Drawn by<b>Updraft Labs</b></span>
+      <a href="/">Sheet<b>Home ↗</b></a>
+      <a href="/brand/">Brand<b>Logo &amp; kit</b></a>
+      <span>©<b id="year">2026</b></span>
+      <a href="/#contact">Altitude<b>Book a call ↗</b></a>
+    </div>
+  </footer>
+  </div>
 </body>
 </html>

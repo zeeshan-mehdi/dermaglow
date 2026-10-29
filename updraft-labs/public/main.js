@@ -10,24 +10,21 @@ document.querySelectorAll("[data-email]").forEach((a) => {
   a.href = "mailto:" + CONTACT_EMAIL;
   a.textContent = CONTACT_EMAIL;
 });
-document.getElementById("year").textContent = new Date().getFullYear();
+const year = document.getElementById("year");
+if (year) year.textContent = new Date().getFullYear();
 
 // ---------- nav ----------
-const nav = document.getElementById("nav");
-const onScroll = () => nav.classList.toggle("scrolled", scrollY > 20);
-addEventListener("scroll", onScroll, { passive: true });
-onScroll();
-
 const toggle = document.querySelector(".nav-toggle");
 const menu = document.getElementById("mobile-menu");
-const setMenu = (open) => {
-  toggle.setAttribute("aria-expanded", open);
-  toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-  menu.hidden = !open;
-  nav.classList.toggle("scrolled", open || scrollY > 20);
-};
-toggle.addEventListener("click", () => setMenu(menu.hidden));
-menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setMenu(false)));
+if (toggle && menu) {
+  const setMenu = (open) => {
+    toggle.setAttribute("aria-expanded", open);
+    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    menu.hidden = !open;
+  };
+  toggle.addEventListener("click", () => setMenu(menu.hidden));
+  menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setMenu(false)));
+}
 
 // ---------- reveal on scroll ----------
 const io = new IntersectionObserver(
@@ -43,20 +40,12 @@ const io = new IntersectionObserver(
 document.querySelectorAll(".reveal").forEach((el) => {
   // stagger siblings that reveal together
   const sibs = [...el.parentElement.children].filter((c) => c.classList.contains("reveal"));
-  el.style.setProperty("--d", Math.min(sibs.indexOf(el), 6) * 0.08 + "s");
+  el.style.setProperty("--d", Math.min(sibs.indexOf(el), 6) * 0.07 + "s");
   io.observe(el);
 });
 
-// ---------- pointer glow on cards ----------
-document.querySelectorAll("[data-glow]").forEach((el) => {
-  el.addEventListener("pointermove", (e) => {
-    const r = el.getBoundingClientRect();
-    el.style.setProperty("--mx", e.clientX - r.left + "px");
-    el.style.setProperty("--my", e.clientY - r.top + "px");
-  });
-});
-
 // ---------- where AI fits ----------
+if (document.querySelector(".fits-panel")) {
 const FITS = {
   ops: {
     before: "Staff re-key data from emails and PDFs into three different systems, and orders wait days for a manual approval.",
@@ -111,7 +100,10 @@ tabs.forEach((t) =>
 );
 showFit("ops");
 
+}
+
 // ---------- contact form ----------
+if (document.getElementById("contact-form")) {
 // Posts to /api/contact (functions/api/contact.js). If that isn't set up
 // yet, or fails, the message opens in the visitor's email app instead.
 const form = document.getElementById("contact-form");
@@ -172,95 +164,86 @@ form.addEventListener("submit", async (e) => {
 });
 form.addEventListener("input", (e) => e.target.classList.remove("invalid"));
 
-// ---------- hero: rising air ----------
-(() => {
-  const canvas = document.getElementById("sky");
+}
+
+// ---------- Fig. 01: the wind tunnel ----------
+// Flat, broken lines (drag) meet the slice, square to the logo's 2:5 rising
+// line, and come out lifted, solid and coloured. The pointer is a thermal.
+document.querySelectorAll("canvas[data-tunnel], #tunnel").forEach((canvas) => {
   const ctx = canvas.getContext("2d");
-  const COLORS = ["91,140,255", "125,211,252", "134,245,207", "190,170,255"];
-  let w, h, dpr, parts, stars, raf, visible = true;
-  const mouse = { x: -9999, y: -9999 };
+  const INK = "#121211", ORANGE = "#FF5A1F";
+  const LIFT_COLS = ["#0E9F79", "#13B48A", "#2BC9A0", "#2443D6", "#3B5BE0", "#1A34B0"];
+  const TAN = 0.4;
+  const lost = canvas.dataset.tunnel === "lost"; // 404: lines fall instead of rising
+  let W, H, dpr, raf = 0, visible = true, start = performance.now();
+  const mouse = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4 };
 
-  const makePart = (seedY) => ({
-    x: Math.random() * w,
-    y: seedY ? Math.random() * h : h + Math.random() * 80,
-    v: 0.35 + Math.random() * 1.1,
-    amp: 6 + Math.random() * 22,
-    freq: 0.004 + Math.random() * 0.006,
-    phase: Math.random() * Math.PI * 2,
-    c: COLORS[(Math.random() * COLORS.length) | 0],
-    trail: [],
-    len: 14 + ((Math.random() * 22) | 0),
-  });
-
-  const resize = () => {
+  const size = () => {
     dpr = Math.min(devicePixelRatio || 1, 2);
-    w = canvas.clientWidth;
-    h = canvas.clientHeight;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
+    W = canvas.clientWidth; H = canvas.clientHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const n = Math.round(Math.min(160, (w * h) / 9000));
-    parts = Array.from({ length: n }, () => makePart(true));
-    stars = Array.from({ length: Math.round(n * 0.7) }, () => ({
-      x: Math.random() * w, y: Math.random() * h * 0.8, r: Math.random() * 1.1 + 0.2, p: Math.random() * 6,
-    }));
   };
+  const ease = (t) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 4);
 
-  const frame = (t) => {
-    ctx.clearRect(0, 0, w, h);
-    for (const s of stars) {
-      const a = 0.15 + 0.35 * (0.5 + 0.5 * Math.sin(t * 0.001 + s.p));
-      ctx.fillStyle = `rgba(220,230,255,${a})`;
+  const draw = (now) => {
+    const t = (now - start) / 1000;
+    mouse.x += (mouse.tx - mouse.x) * 0.12; mouse.y += (mouse.ty - mouse.y) * 0.12;
+    ctx.clearRect(0, 0, W, H);
+
+    // skew grid on the rising angle
+    ctx.strokeStyle = "rgba(18,18,17,.07)"; ctx.lineWidth = 1;
+    for (let k = -H; k < W + H; k += 44) { ctx.beginPath(); ctx.moveTo(k, H); ctx.lineTo(k + H / TAN, 0); ctx.stroke(); }
+
+    const n = Math.max(14, Math.min(28, Math.round(H / 26)));
+    const top = H * 0.14, bot = H * 0.9, gap = (bot - top) / (n - 1);
+    const cx = W * (lost ? 0.42 : 0.47), cy = (top + bot) / 2;
+    const lift = gap * 3.2 * ease((t - 0.3) / 1.6) * (lost ? -1 : 1);
+    const breathe = reduceMotion ? 0 : Math.sin(t * 0.8) * gap * 0.25;
+
+    for (let i = 0; i < n; i++) {
+      const y = top + i * gap;
+      const xs = cx + (y - cy) * TAN;
+      const major = i % 4 === 0;
+      const w = major ? 2.6 : 1.3;
+      // drag: flat ink, broken, flowing
+      ctx.strokeStyle = INK; ctx.lineWidth = w;
+      ctx.setLineDash(major ? [] : [22 + (i % 3) * 6, 6]);
+      ctx.lineDashOffset = reduceMotion ? 0 : -t * (34 + (i % 3) * 10);
+      ctx.beginPath(); ctx.moveTo(-10, y); ctx.lineTo(xs - 5, y); ctx.stroke();
+      ctx.setLineDash([]);
+      // lift: solid, coloured, raised; a thermal under the pointer
+      const col = i === Math.round(n * 0.6) ? ORANGE : LIFT_COLS[Math.min(LIFT_COLS.length - 1, Math.floor((i / n) * LIFT_COLS.length))];
+      ctx.strokeStyle = col; ctx.lineWidth = w + 1.2;
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, 6.283);
-      ctx.fill();
-    }
-    const cx = w / 2;
-    ctx.lineCap = "round";
-    for (const p of parts) {
-      // rise faster near the centre column, curl as you climb
-      const centre = 1 - Math.min(Math.abs(p.x - cx) / (w * 0.6), 1);
-      p.y -= p.v * (1 + centre * 1.4);
-      p.x += Math.sin(p.y * p.freq + p.phase + t * 0.0004) * 0.5 + (cx - p.x) * 0.0006;
-      const dx = p.x - mouse.x, dy = p.y - mouse.y, dd = dx * dx + dy * dy;
-      if (dd < 22000) { const f = (1 - dd / 22000) * 2.2; p.x += (dx / Math.sqrt(dd + 1)) * f; }
-      const drawX = p.x + Math.sin(p.y * p.freq * 0.5 + p.phase) * p.amp;
-      p.trail.push(drawX, p.y);
-      if (p.trail.length > p.len * 2) p.trail.splice(0, 2);
-      const fade = Math.min(1, p.y / (h * 0.35)) * Math.min(1, (h - p.y + 60) / 120);
-      if (p.trail.length > 4) {
-        ctx.strokeStyle = `rgba(${p.c},${0.55 * fade})`;
-        ctx.lineWidth = 0.6 + p.v * 0.7;
-        ctx.beginPath();
-        ctx.moveTo(p.trail[0], p.trail[1]);
-        for (let i = 2; i < p.trail.length; i += 2) ctx.lineTo(p.trail[i], p.trail[i + 1]);
-        ctx.stroke();
-        ctx.fillStyle = `rgba(${p.c},${0.9 * fade})`;
-        ctx.beginPath();
-        ctx.arc(drawX, p.y, 0.6 + p.v * 0.6, 0, 6.283);
-        ctx.fill();
+      for (let px = xs + 5; px <= W + 12; px += 6) {
+        const yl = y - lift - breathe * ((px - xs) / W);
+        const dx = px - mouse.x, dy = yl - mouse.y;
+        const thermal = Math.exp(-(dx * dx + dy * dy) / (2 * 78 * 78)) * 30 * (lost ? -1 : 1);
+        const yy = yl - thermal;
+        px === xs + 5 ? ctx.moveTo(px, yy) : ctx.lineTo(px, yy);
       }
-      if (p.y < -40) Object.assign(p, makePart(false));
+      ctx.stroke();
     }
-    raf = visible ? requestAnimationFrame(frame) : 0;
+    // the slice
+    ctx.strokeStyle = ORANGE; ctx.lineWidth = 1.4; ctx.setLineDash([6, 5]);
+    ctx.beginPath(); ctx.moveTo(cx + (top - 40 - cy) * TAN, top - 40); ctx.lineTo(cx + (bot + 40 - cy) * TAN, bot + 40); ctx.stroke();
+    ctx.setLineDash([]);
+    raf = visible && !(reduceMotion && t > 2.2) ? requestAnimationFrame(draw) : 0;
   };
 
-  resize();
-  addEventListener("resize", () => { cancelAnimationFrame(raf); resize(); if (visible) raf = requestAnimationFrame(frame); });
-  canvas.parentElement.addEventListener("pointermove", (e) => {
+  size();
+  addEventListener("resize", () => { size(); if (!raf) raf = requestAnimationFrame(draw); });
+  const host = canvas.parentElement;
+  host.addEventListener("pointermove", (e) => {
     const r = canvas.getBoundingClientRect();
-    mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+    mouse.tx = e.clientX - r.left; mouse.ty = e.clientY - r.top;
+    if (mouse.x < -1e3) { mouse.x = mouse.tx; mouse.y = mouse.ty; }
+    if (!raf) raf = requestAnimationFrame(draw);
   });
-  canvas.parentElement.addEventListener("pointerleave", () => { mouse.x = mouse.y = -9999; });
-
-  if (reduceMotion) {
-    // a single still frame after letting the trails form
-    visible = false;
-    for (let i = 0; i < 60; i++) frame(i * 16);
-    return;
-  }
+  host.addEventListener("pointerleave", () => { mouse.tx = mouse.ty = -1e4; mouse.x = mouse.y = -1e4; });
   new IntersectionObserver(([e]) => {
     visible = e.isIntersecting;
-    if (visible && !raf) raf = requestAnimationFrame(frame);
+    if (visible && !raf) raf = requestAnimationFrame(draw);
   }).observe(canvas);
-})();
+});

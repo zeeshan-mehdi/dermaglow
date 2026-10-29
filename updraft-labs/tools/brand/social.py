@@ -18,31 +18,36 @@ def sized(svg, h):
     return re.sub(r' width="[\d.]+" height="[\d.]+"', f' style="height:{h}px;width:auto"', svg, count=1)
 
 
-mark, logo = read("updraft-mark-dark-bg.svg"), read("updraft-logo-dark-bg.svg")
-FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700'
-         '&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">')
-BG = ("background:radial-gradient(60% 80% at 78% 40%, rgba(91,140,255,.22), transparent 60%),"
-      "radial-gradient(40% 60% at 95% 95%, rgba(134,245,207,.14), transparent 70%),#06080f;")
-GRAIN = ('<div style="position:absolute;inset:0;opacity:.06;background-image:url(&quot;data:image/svg+xml,'
-         '%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27160%27 height=%27160%27%3E%3Cfilter id=%27n%27%3E'
-         '%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%27.9%27 numOctaves=%273%27/%3E%3C/filter%3E'
-         '%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27/%3E%3C/svg%3E&quot;)"></div>')
-EM = ("font-family:Instrument Serif;font-style:italic;background:linear-gradient(100deg,#5b8cff,#7dd3fc 45%,#86f5cf);"
-      "-webkit-background-clip:text;color:transparent;padding-right:.08em;letter-spacing:-0.01em")
+mark, logo = read("updraft-mark-dark-bg.svg"), read("updraft-logo-light-bg.svg")
+MAINJS = open(os.path.join(PUB, "main.js")).read()
+FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800'
+         '&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap">')
+CSS = ("<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#F2F0E9;color:#121211;font-family:Geist;position:relative;overflow:hidden}"
+       ".h{font-family:'Bricolage Grotesque';font-weight:760;font-variation-settings:'opsz' 96,'wdth' 92;letter-spacing:-0.025em;line-height:.92}"
+       ".h em{font-style:normal;color:#2443D6}.m{font-family:'Geist Mono';text-transform:uppercase;letter-spacing:.08em}"
+       ".fig{position:absolute;top:0;bottom:0;background:#E8E5DB;border-left:1px solid #121211}.fig canvas{width:100%;height:100%;display:block}"
+       ".tag{position:absolute;font-family:'Geist Mono';font-size:15px;letter-spacing:.08em;text-transform:uppercase;background:#F2F0E9;padding:6px 10px;box-shadow:inset 0 0 0 1.5px #121211}"
+       ".frame{position:absolute;inset:0 26px;border-left:1.5px solid #121211;border-right:1.5px solid #121211;pointer-events:none}</style>")
 
-og = f"""<html><head>{FONTS}</head><body style="margin:0;width:1200px;height:630px;position:relative;overflow:hidden;{BG}font-family:Geist;color:#eef1f7">{GRAIN}
-<div style="position:absolute;right:-50px;top:30px;opacity:.10">{sized(mark, 640)}</div>
-<div style="position:absolute;left:84px;top:86px">{sized(logo, 64)}</div>
-<div style="position:absolute;left:84px;top:236px;font-size:92px;font-weight:500;letter-spacing:-0.045em;line-height:.98">Find the drag.<br><span style="{EM}">Add the lift.</span></div>
-<div style="position:absolute;left:86px;bottom:74px;font-family:Geist Mono;font-size:20px;letter-spacing:.12em;text-transform:uppercase;color:#7dd3fc">AI · Software · Design · Growth</div></body></html>"""
 
-banner = f"""<html><head>{FONTS}</head><body style="margin:0;width:1584px;height:396px;position:relative;overflow:hidden;{BG}font-family:Geist;color:#eef1f7">{GRAIN}
-<div style="position:absolute;left:470px;top:-90px;opacity:.08">{sized(mark, 560)}</div>
-<div style="position:absolute;right:96px;top:84px;text-align:right">
-<div style="font-size:66px;font-weight:500;letter-spacing:-0.04em;line-height:1.02">Find the drag.<br><span style="{EM}">Add the lift.</span></div>
-<div style="margin-top:26px;font-family:Geist Mono;font-size:17px;letter-spacing:.12em;text-transform:uppercase;color:#7dd3fc">AI &amp; software studio · Process audits · Automation · Product</div></div></body></html>"""
+def page(w, h, inner):
+    return (f"<html><head>{FONTS}{CSS}</head><body style='width:{w}px;height:{h}px'>{inner}"
+            f"<div class='frame'></div><script>{MAINJS}</script></body></html>")
 
-avatar = f"""<html><body style="margin:0;width:800px;height:800px;display:grid;place-items:center;background:radial-gradient(55% 55% at 60% 38%, rgba(125,211,252,.22), transparent 70%),linear-gradient(#101833,#05070d)">
+
+og = page(1200, 630, f"""
+<div style="position:absolute;left:66px;top:58px">{sized(logo, 46)}</div>
+<div class="h" style="position:absolute;left:64px;top:214px;font-size:98px">Find the drag.<br><em>Add the lift.</em></div>
+<div class="m" style="position:absolute;left:66px;bottom:60px;font-size:17px">AI · Software · Design · Growth</div>
+<div class="fig" style="left:660px;right:26px"><canvas id="tunnel"></canvas><span class="tag" style="left:16px;top:16px">Fig. 01 — The lift</span></div>""")
+
+banner = page(1584, 396, f"""
+<div class="fig" style="left:26px;width:640px;border-left:0;border-right:1px solid #121211"><canvas id="tunnel"></canvas></div>
+<div style="position:absolute;right:86px;top:74px;text-align:right">
+<div class="h" style="font-size:76px">Find the drag.<br><em>Add the lift.</em></div>
+<div class="m" style="margin-top:26px;font-size:16px">AI &amp; software studio · Process audits · Automation · Product</div></div>""")
+
+avatar = f"""<html><body style="margin:0;width:800px;height:800px;display:grid;place-items:center;background:#121211">
 <div style="margin-top:10px">{sized(mark, 400)}</div></body></html>"""
 
 jobs = [
@@ -57,8 +62,8 @@ jobs = [
     dict(src=f"{B}/updraft-logo-stacked-light-bg.svg", w=1000, h=740, iw=900, ih=700, out=f"{B}/updraft-logo-stacked-light-bg.png", transparent=True),
     dict(src=f"{B}/updraft-mark-dark-bg.svg", w=680, h=1040, out=f"{B}/updraft-mark-dark-bg.png", transparent=True),
     dict(src=f"{B}/updraft-mark-light-bg.svg", w=680, h=1040, out=f"{B}/updraft-mark-light-bg.png", transparent=True),
-    dict(html=og, w=1200, h=630, out=f"{A}/og.png", wait=1200),
-    dict(html=banner, w=1584, h=396, out=f"{B}/updraft-linkedin-banner.png", wait=1200),
+    dict(html=og, w=1200, h=630, out=f"{A}/og.png", wait=3200),
+    dict(html=banner, w=1584, h=396, out=f"{B}/updraft-linkedin-banner.png", wait=3200),
     dict(html=avatar, w=800, h=800, out=f"{B}/updraft-social-avatar.png"),
 ]
 jp = os.path.join(HERE, ".jobs.json")
