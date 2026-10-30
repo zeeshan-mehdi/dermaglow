@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://updraftlabs.ai/sitemap.xml
+Sitemap: https://updraftlabs.studio/sitemap.xml

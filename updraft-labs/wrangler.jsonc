@@ -31,8 +31,8 @@
     }
   },
   "vars": {
-    "CONTACT_TO": "hello@updraftlabs.ai",
-    "CONTACT_FROM": "website@updraftlabs.ai",
-    "SITE_DOMAIN": "updraftlabs.ai"
+    "CONTACT_TO": "hello@updraftlabs.studio",
+    "CONTACT_FROM": "website@updraftlabs.studio",
+    "SITE_DOMAIN": "updraftlabs.studio"
   }
 }

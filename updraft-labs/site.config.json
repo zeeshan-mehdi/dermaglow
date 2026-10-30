@@ -1,7 +1,7 @@
 {
   "_readme": "Fill these in, then run: python3 tools/configure.py   (empty string = leave out)",
-  "domain": "updraftlabs.ai",
-  "email": "hello@updraftlabs.ai",
+  "domain": "updraftlabs.studio",
+  "email": "hello@updraftlabs.studio",
   "booking_url": "",
   "location": "",
   "founded": "2026",

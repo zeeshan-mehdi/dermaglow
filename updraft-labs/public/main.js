@@ -1,7 +1,7 @@
 // Updraft Labs — site behaviour
 // Change CONTACT_EMAIL once the domain's mailbox is set up; every
 // [data-email] link and the contact form use it.
-const CONTACT_EMAIL = "hello@updraftlabs.ai";
+const CONTACT_EMAIL = "hello@updraftlabs.studio";
 
 document.documentElement.classList.add("js");
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
